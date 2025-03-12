@@ -9,6 +9,8 @@ import SwiftUI
 
 
 struct CreateAccountView: View {
+    @State private var gotoOnboard = false
+    
     @State private var username: String = ""
     @State private var email: String = ""
     @State private var phone: String = ""
@@ -31,8 +33,8 @@ struct CreateAccountView: View {
                 
                 TextField("Password", text: $password)
                 
-                Button(action: {}){
-                    Text("Continue")
+                Button("Continue"){
+                    gotoOnboard = true
                 }
                 
                 Button(action: {}){
@@ -55,6 +57,9 @@ struct CreateAccountView: View {
             }
             .frame(width: 402, height: 869)
             .background(Color.navy)
+            .navigationDestination(isPresented: $gotoOnboard){
+                OnboardingView()
+            }
         }
     }
 }
