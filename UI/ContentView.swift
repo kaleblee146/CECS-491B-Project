@@ -7,30 +7,22 @@
 
 import SwiftUI
 
-extension Color {
-    static let magenta = Color(red: 288/255, green: 68/255, blue: 124/255)
-}
-
-extension Color {
-    static let navy = Color(red: 42/255, green: 46/255, blue: 67/255)
-}
-
-extension Color {
-    static let textBoxNavy = Color(red: 53/255, green: 58/255, blue: 80/255)
-}
 
 struct ContentView: View {
+    /*
+     Variables for Navigation
+     */
     @State private var goToLogin = false
+    @State private var goToSignUp = false
     
     var body: some View {
         NavigationStack{
             ZStack {
                 Image("Welcome")
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
                     .ignoresSafeArea()
-                    
-                
+    
                 VStack {
                     Image("moveMentor")
                     
@@ -38,11 +30,9 @@ struct ContentView: View {
                         .font(Font.custom("Roboto_Condensed-Black", size: 40))
                         .padding(.bottom, 30)
                     
-                    
                     Text("Sculp Your Body")
                         .font(Font.custom("Roboto_Condensed-Black", size: 27))
                         .padding(.bottom, 100)
-                    
                     
                     Button("Login") {
                         goToLogin = true
@@ -57,17 +47,25 @@ struct ContentView: View {
                     .buttonStyle(BorderlessButtonStyle())
                     
                     
-                    
-                    Text("Don't have an account? ")
-                    + Text("Sign up")
+                    HStack{
+                        Text("Don't have an account?")
+                        Button("Sign up"){
+                            goToSignUp = true
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
                         .foregroundColor(Color.magenta)
+                    }
                     
                 }
                 
             }
             .padding()
+            .frame(width: 402, height: 869)
             .navigationDestination(isPresented: $goToLogin) {
                 LoginView()
+            }
+            .navigationDestination(isPresented: $goToSignUp){
+                CreateAccountView()
             }
             
             
