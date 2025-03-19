@@ -28,11 +28,11 @@ struct ContentView: View {
                     
                     Text("MoveMentor")
                         .font(Font.custom("Roboto_Condensed-Black", size: 40))
-                        .padding(.bottom, 30)
+                        .padding(.top, 30)
                     
                     Text("Sculp Your Body")
                         .font(Font.custom("Roboto_Condensed-Black", size: 27))
-                        .padding(.bottom, 100)
+                        .padding(.top, 50)
                     
                     Button("Login") {
                         goToLogin = true
@@ -43,7 +43,7 @@ struct ContentView: View {
                     .background(Color.magenta)
                     .foregroundColor(.white)
                     .cornerRadius(25)
-                    .padding(.bottom, 50)
+                    .padding(.top, 75)
                     .buttonStyle(BorderlessButtonStyle())
                     
                     
@@ -55,7 +55,7 @@ struct ContentView: View {
                         .buttonStyle(BorderlessButtonStyle())
                         .foregroundColor(Color.magenta)
                     }
-                    
+                    .padding(.top, 50)
                 }
                 
             }
