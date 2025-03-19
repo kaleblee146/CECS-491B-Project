@@ -1,10 +1,20 @@
-# users/url.py
+# users/urls.py
 from django.urls import path
-from .views import UserList, register_user, login_user
+from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import TemplateView
+from .views import UserList, register_user, login_user, home_view, welcome_view, registration_view
 
 urlpatterns = [
-    path('', UserList.as_view(), name='user-list'), # This will respond to /api/users/
-    path('register/', register_user, name='register'),
-    path('login/', login_user, name='login'),
+    # Web views
+    #path("", home_view, name="home"),  # Home Page (Web)
+    path("", welcome_view, name="welcome"),  # Home Page (Web)
+    path("login/", LoginView.as_view(template_name="users/login.html"), name="login"),  # Web Login Page
+    path("logout/", LogoutView.as_view(next_page="home"), name="logout"),  # Web Logout
+    path("register/", registration_view, name="register"),  # Web Register Page
+    path('terms/', TemplateView.as_view(template_name="terms.html"), name='terms'),
 
+    # API views
+    path("api/list/", UserList.as_view(), name="user-list"),  # API: Get all users
+    path("api/register/", register_user, name="register-user"),  # API: Register user
+    path("api/login/", login_user, name="login-user"),  # API: Login user
 ]
