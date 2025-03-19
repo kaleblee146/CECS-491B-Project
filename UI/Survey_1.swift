@@ -10,14 +10,21 @@ import SwiftUI
 struct SurveyView1: View {
     @State private var goBack = false
     @State private var continueButton = false
-    @State var selectedImage: Int? = nil
+    @State private var selectedImage: Int? = nil
     
     
     var body: some View{
         NavigationStack{
             VStack{
                 Text("Male or Female?")
+                    .font(Font.custom("Roboto_condensed-black", size: 18))
+                    .padding(.bottom, 15)
+                
                 Text("Select your sex")
+                    .font(Font.custom("Roboto_condensed-black", size: 18))
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 30)
+                
                 
                 HStack{
                     Image("Male")
@@ -35,15 +42,28 @@ struct SurveyView1: View {
                     Button("BACK"){
                         goBack = true
                     }
+                    .font(Font.custom("Roboto_Condensed-Black", size: 18))
+                    .frame(width: 164, height: 60)
                     .background(Color.blueMagenta)
+                    .foregroundColor(.white)
+                    .cornerRadius(15)
+                    .buttonStyle(BorderlessButtonStyle())
                     .padding()
+                    
+
                     
                     Button("CONTINUE"){
                         continueButton = true
                     }
+                    .font(Font.custom("Roboto_Condensed-Black", size: 18))
+                    .frame(width: 164, height: 60)
                     .background(Color.magenta)
+                    .foregroundColor(.white)
+                    .cornerRadius(15)
+                    .buttonStyle(BorderlessButtonStyle())
+                    .padding()
                 }
-                .padding(.top, 15)
+                .padding(.top, 250)
             }
             .frame(width: 402, height: 869)
             .background(Color.navy)
