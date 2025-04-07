@@ -26,13 +26,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Add these for DRF and JWT
+    # DRF and JWT
     "rest_framework",
     "rest_framework_simplejwt",
     'rest_framework.authtoken',
-    # Add your apps
+    # Apps
     "users",
     "workouts",
+    # Cross-Origin Requests
+    "corsheaders"
 ]
 
 MIDDLEWARE = [
@@ -43,6 +45,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -151,3 +155,7 @@ SIMPLE_JWT = {
 
 # Add custom user model
 AUTH_USER_MODEL = "users.CustomUser"
+
+# TESTING ONLY, CHANGE TO WHITELIST FOR PRODUCTION
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
