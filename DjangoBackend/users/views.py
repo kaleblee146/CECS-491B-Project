@@ -6,7 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from rest_framework.generics import ListAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.permissions import BasePermission, IsAuthenticated
-from .models import CustomUser, UserRoles  # Ensure UserRoles is correctly imported
+from .models import CustomUser, UserRoles
+from .serializers import RegisterSerializer
 from django.shortcuts import render, redirect
 
 
@@ -23,7 +24,22 @@ class IsAdminUserOnly(BasePermission):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = CustomUser  
-        fields = ['id', 'username', 'full_name', 'date_of_birth', 'bio', 'profile_picture']
+        fields = ['id',
+            'username',
+            'firstName',
+            'lastName',
+            'dob',
+            'email',
+            'phone',
+            'gender',
+            'age',
+            'units',
+            'weight',
+            'height',
+            'goals',
+            'bio',
+            'profile_picture',
+            'role']
 
 # User List View
 class UserList(ListAPIView):
@@ -38,23 +54,28 @@ class UserList(ListAPIView):
 # Register User API
 @api_view(['POST'])
 def register_user(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-    role = request.data.get('role', 'Free')  # Default role
+    print("Incoming request data:", request.data)  # 👈 See exactly what's coming in
 
-    if CustomUser.objects.filter(username=username).exists():
-        return Response({'error': 'User already exists'}, status=400)
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
 
-    user = CustomUser.objects.create_user(username=username, password=password, role=role)
-    refresh = RefreshToken.for_user(user)
-    
-    return Response({
-        'id': user.id,
-        'username': user.username,
-        'role': user.role,
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
-    })
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'firstName': user.firstName,
+            'lastName': user.lastName,
+            'email': user.email,
+            'phone': user.phone,
+            'role': user.role,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
+
+    print("Serializer errors:", serializer.errors)  # 👈 See what went wrong
+    return Response(serializer.errors, status=400)
+
 
 # Login User API
 @api_view(['POST'])
@@ -70,6 +91,12 @@ def login_user(request):
     return Response({
         'refresh': str(refresh),
         'access': str(refresh.access_token),
+        'email': user.email,
+        'username': user.username,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'role': user.role,
+        'id': user.id
     })
 
 # Renders home.html for web users

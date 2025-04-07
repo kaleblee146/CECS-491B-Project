@@ -1,15 +1,21 @@
 # users/serializers.py
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from .models import CustomUser
 
-User = get_user_model()
-
-class UserSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ['id', 'username', 'password', 'email', 'full_name', 'date_of_birth', 'bio']
+        model = CustomUser
+        fields = [
+            'username', 'email', 'password', 'firstName', 'lastName',
+            'dob', 'phone', 'gender', 'age', 'units', 'weight',
+            'height', 'goals', 'bio', 'profile_picture', 'role'
+        ]
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        password = validated_data.pop('password', None)
+        print("Password entered:", password)
+        user = CustomUser.objects.create_user(password=password, **validated_data)
+        print("User created with password hash:", user.password)
+        return user
