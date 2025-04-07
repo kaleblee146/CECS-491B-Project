@@ -6,12 +6,12 @@ from .views import UserList, register_user, login_user, home_view, welcome_view,
 
 urlpatterns = [
     # Web views
-    #path("", home_view, name="home"),  # Home Page (Web)
     path("", welcome_view, name="welcome"),  # Home Page (Web)
     path("login/", LoginView.as_view(template_name="users/login.html"), name="login"),  # Web Login Page
     path("logout/", LogoutView.as_view(next_page="home"), name="logout"),  # Web Logout
     path("register/", registration_view, name="register"),  # Web Register Page
     path('terms/', TemplateView.as_view(template_name="terms.html"), name='terms'),
+    path('home/', home_view, name='home'),
 
     # API views
     path("api/list/", UserList.as_view(), name="user-list"),  # API: Get all users

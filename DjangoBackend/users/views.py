@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from rest_framework.generics import ListAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -100,13 +101,15 @@ def login_user(request):
         'id': user.id
     })
 
-# Renders home.html for web users
+# Renders home.html
 def home_view(request):
-    return render(request, "home.html")
+    return render(request, "home_dynamic.html")
 
+# Renders welcome.html
 def welcome_view(request):
     return render(request, 'welcome.html')
 
+# Renders login.html
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -114,9 +117,10 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')  # Redirect to your dashboard page
+            return redirect('welcome')  # Redirect to welcome after login
     return render(request, 'login.html')
 
+# Renders register.html
 def registration_view(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)

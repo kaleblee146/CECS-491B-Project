@@ -21,6 +21,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls), # Django Admin Panel
+    path('django_plotly_dash/', include('django_plotly_dash.urls')), # dash
+    path('dash_app/', include('backend.dash_app.urls')),
     path("", include("users.urls")), # Web app home & log-in page
     
     # API Routes for iOS App

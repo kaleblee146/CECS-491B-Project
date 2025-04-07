@@ -26,6 +26,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+    'channels',
+    'backend.dash_app.apps.DashAppConfig',
     # DRF and JWT
     "rest_framework",
     "rest_framework_simplejwt",
@@ -46,7 +49,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware"
+    "django.middleware.common.CommonMiddleware",
+    'django_plotly_dash.middleware.BaseMiddleware',
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -68,7 +72,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+ASGI_APPLICATION = "backend.routing.application"
 
+# Django Plotly Dash settings
+PLOTLY_DASH = {
+    "serve_locally": True,  # Serve the JS, CSS files from local, not from CDN
+}
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'  # Needed for the iframe to work
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -159,3 +170,18 @@ AUTH_USER_MODEL = "users.CustomUser"
 # TESTING ONLY, CHANGE TO WHITELIST FOR PRODUCTION
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Login redirect
+LOGIN_REDIRECT_URL = '/home'
+
+# Add channels configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        # For production, use Redis:
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        # 'CONFIG': {
+        #     'hosts': [('redis-server-name', 6379)],
+        # }
+    }
+}
