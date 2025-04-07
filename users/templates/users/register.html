@@ -1,0 +1,53 @@
+<!-- templates/signup.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Create an account</h2>
+    
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" name="username" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="tel" name="phone" placeholder="Phone">
+        </div>
+        <div class="form-group">
+            <input type="date" name="date_of_birth" placeholder="Date of birth">
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">CONTINUE</button>
+        </div>
+    </form>
+    
+    <div class="divider"><span>or</span></div>
+    
+    <div class="form-group">
+        <button class="btn btn-social">
+                <img src="/static/images/google-icon.svg" alt="Google">
+            Sign Up with Google
+        </button>
+    </div>
+    
+    <div class="form-group">
+        <button class="btn btn-social">
+            <img src="/static/images/apple-icon.svg" alt="Apple">
+            Sign Up with Apple
+        </button>
+    </div>
+    
+    <div class="terms-text">
+        By clicking Sign up you agree to the following<br>
+        <a href="{% url 'terms' %}" class="footer-link">Terms and Conditions</a> without reservation
+    </div>
+</div>
+{% endblock %}

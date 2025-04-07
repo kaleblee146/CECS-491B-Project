@@ -1,0 +1,31 @@
+<!-- templates/welcome.html -->
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="logo-container">
+        <div class="logo">
+            <svg width="60" height="40" viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="15" width="50" height="10" rx="5" fill="#8B5CF6"/>
+                <circle cx="30" cy="20" r="12" fill="#EC4899"/>
+                <rect x="2" y="12" width="8" height="3" rx="1.5" fill="#8B5CF6"/>
+                <rect x="50" y="12" width="8" height="3" rx="1.5" fill="#8B5CF6"/>
+                <rect x="2" y="25" width="8" height="3" rx="1.5" fill="#8B5CF6"/>
+                <rect x="50" y="25" width="8" height="3" rx="1.5" fill="#8B5CF6"/>
+            </svg>
+        </div>
+        <h1>Move Mentor</h1>
+        <div class="subtitle">Sculpt Your Body</div>
+    </div>
+    
+    <div class="form-group" style="display: flex; justify-content: center;">
+        <a href="{% url 'login' %}" class="btn btn-primary" style="max-width: 200px; display: flex; justify-content: center;">Login</a>
+    </div>
+    
+    <div class="footer-text">
+        Don't have an account? <a href="{% url 'register' %}" class="footer-link">Sign up</a>
+    </div>
+</div>
+{% endblock %}

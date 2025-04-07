@@ -1,12 +1,23 @@
-Packages
-.build
-xcuserdata
-*.xcodeproj
-DerivedData/
-.DS_Store
-db.sqlite
-.swiftpm
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+*.pyc
+*.pyo
+db.sqlite3
+media/
+
+# Virtual environment
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# Environment variables
 .env
-.env.*
-!.env.example
-.vscode
+.env.local
+
+# macOS
+.DS_Store
