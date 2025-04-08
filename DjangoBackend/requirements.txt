@@ -1,6 +1,6 @@
 asgiref==3.8.1
-dash==3.0.2
-dash-bootstrap-components==2.0.0
+dash==2.9.3
+dash-bootstrap-components==1.4.1
 Django==4.2.20
 django-cors-headers==4.7.0
 django-plotly-dash==2.4.5
