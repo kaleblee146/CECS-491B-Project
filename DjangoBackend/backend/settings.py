@@ -85,29 +85,32 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'  # Needed for the iframe to work
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Replace the SQLite database with PostgreSQL
-'''
+
+# AWS RDS
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "movementor_db",  # Replace with your database name
-        "USER": "movementor_user",  # Replace with your database user
-        "PASSWORD": "movementor_password",  # Replace with your database password
-        "HOST": "localhost",
+        "NAME": "movementor-django-db",  # Replace with your database name
+        "USER": "MoveMentor",  # Replace with your database user
+        "PASSWORD": "mentorMove123!",  # Replace with your database password
+        "HOST": "movementor-django-db.cjewwmqk8snu.us-east-2.rds.amazonaws.com",
         "PORT": "5432",
     }
 }
+
+# Local DB
 '''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',            # or your chosen DB name
-        'USER': 'chasesansom',
-        'PASSWORD': '',                # leave blank if no password
+        'NAME': 'postgres',            # Replace with your database name
+        'USER': 'chasesansom',         # Replace with your database user
+        'PASSWORD': '',                # Replace with your database password
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-
+'''
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -153,6 +156,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Add DRF configuration
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
