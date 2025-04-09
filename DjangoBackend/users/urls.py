@@ -2,7 +2,7 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView
-from .views import UserList, register_user, login_user, home_view, welcome_view, registration_view
+from .views import UserList, register_user, login_user, home_view, welcome_view, registration_view, request_password_reset, confirm_password_reset
 
 urlpatterns = [
     # Web views
