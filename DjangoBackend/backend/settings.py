@@ -93,7 +93,7 @@ DATABASES = {
         "NAME": "movementor-django-db",  # Replace with your database name
         "USER": "MoveMentor",  # Replace with your database user
         "PASSWORD": "mentorMove123!",  # Replace with your database password
-        "HOST": "movementor-django-db.cjewwmqk8snu.us-east-2.rds.amazonaws.com",
+        "HOST": "movementor-django-db.cfuoimgmmxni.us-west-1.rds.amazonaws.com",
         "PORT": "5432",
     }
 }
