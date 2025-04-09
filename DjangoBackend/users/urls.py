@@ -17,4 +17,7 @@ urlpatterns = [
     path("api/list/", UserList.as_view(), name="user-list"),  # API: Get all users
     path("api/register/", register_user, name="register-user"),  # API: Register user
     path("api/login/", login_user, name="login-user"),  # API: Login user
+
+    path("api/users/request-password-reset/", request_password_reset, name="request-password-reset"),
+    path("api/users/confirm-password-reset/", confirm_password_reset, name="confirm-password-reset"),
 ]

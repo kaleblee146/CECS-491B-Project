@@ -131,3 +131,62 @@ def registration_view(request):
     else:
         form = UserCreationForm()
     return render(request, "users/register.html", {"form": form})
+
+# Password reset
+@api_view(['POST'])
+def request_password_reset(request):
+    email = request.data.get("email")
+
+    try:
+        user = CustomUser.objects.get(email=email)
+        print("✅ Found user. Stored reset_code:", user.reset_code)
+        verif_code = str(random.randint(100000, 999999))
+        user.reset_code = verif_code
+        user.save()
+
+        send_mail(
+            subject= "Your MoveMentor Password Reset Code:",
+            message=f"Your verification code is {verif_code}",
+            from_email="noreply@movementor.com",
+            recipient_list=[email]
+        )
+
+        return Response({"message": "Verification code sent!", "code": verif_code})
+    except CustomUser.DoesNotExist:
+        return Response({"error": "Email not found"}, status=404)
+
+# Password reset confirmation
+@api_view(['POST'])
+def confirm_password_reset(request):
+    email = request.data.get("email").strip().lower()
+    code = request.data.get("code").strip()
+    new_password = request.data.get("new_password")
+
+    print("➡️ Received email:", email)
+    print("➡️ Received code:", code)
+
+    if not new_password:
+        return Response({"error": "Password cannot be empty."}, status=400)
+
+    try:
+        user = CustomUser.objects.get(email=email)
+        print("✅ Found user. Stored code in DB:", user.reset_code)
+
+        if user.reset_code != code:
+            print("❌ Code mismatch!")
+            return Response({"error": "Incorrect verification code."}, status=400)
+
+        try:
+            validate_password(new_password, user=user)
+        except ValidationError as e:
+            return Response({"error": e.messages}, status=400)
+
+        user.set_password(new_password)
+       #user.reset_code = None
+        user.save()
+
+        return Response({"message": "Password reset successfully!"})
+
+    except CustomUser.DoesNotExist:
+        print("❌ Email not found in database.")
+        return Response({"error": "Invalid email."}, status=404)
