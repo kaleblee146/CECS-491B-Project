@@ -29,9 +29,22 @@
 		04FE95222DA37AFC00CD8E68 /* MoveMentorAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoveMentorAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		04AB61542DA6E13800992D82 /* Exceptions for "MoveMentorApp" folder in "MoveMentorApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+			);
+			target = 04FE950A2DA37AF900CD8E68 /* MoveMentorApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		04FE950D2DA37AF900CD8E68 /* MoveMentorApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				04AB61542DA6E13800992D82 /* Exceptions for "MoveMentorApp" folder in "MoveMentorApp" target */,
+			);
 			path = MoveMentorApp;
 			sourceTree = "<group>";
 		};
