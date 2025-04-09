@@ -96,7 +96,7 @@ class LoginAuthViewModel: ObservableObject{
     
     
     func login(username: String, password: String){
-        guard let url = URL(string: "http://127.0.0.1:8000/api/users/login/") else { return }
+        guard let url = URL(string: "http://52.53.157.43:8000/api/login/") else { return }
         
         let body: [String: String] = [
             "username": username,
