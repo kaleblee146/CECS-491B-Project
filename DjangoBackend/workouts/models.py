@@ -19,7 +19,7 @@ class Workout(models.Model):
     """A complete workout session"""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='workouts')
     title = models.CharField(max_length=100)
-    date_time = models.DateTimeField()
+    date_time = models.DateTimeField(default=timezone.now)
     duration = models.DurationField(null=True, blank=True)
     notes = models.TextField(blank=True)
     completed = models.BooleanField(default=False)
