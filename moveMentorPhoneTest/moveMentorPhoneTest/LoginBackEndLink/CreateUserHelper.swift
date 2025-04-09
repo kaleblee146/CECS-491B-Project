@@ -33,7 +33,7 @@ class LoginAuthViewModel: ObservableObject{
         self.session = session
     }
     func socialLogin(idToken: String, provider: String) {
-        // test guard let url = URL(string: "http://127.0.0.1:8000/api/users/social-login/") else { return }
+        //test guard let url = URL(string: "http://127.0.0.1:8000/api/users/social-login/") else { return }
         guard let url = URL(string: "http://52.53.157.43:8000/api/login/") else { return }
                 let body: [String: String] = [
                     "id_token": idToken,
