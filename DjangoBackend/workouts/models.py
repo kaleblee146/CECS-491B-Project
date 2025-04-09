@@ -18,7 +18,7 @@ class ExerciseType(models.Model):
 
 class Workout(models.Model):
     """A complete workout session"""
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='workouts')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='workouts', null=True, blank=True)
     title = models.CharField(max_length=100)
     date_time = models.DateTimeField(default=timezone.now)
     duration = models.DurationField(null=True, blank=True)
