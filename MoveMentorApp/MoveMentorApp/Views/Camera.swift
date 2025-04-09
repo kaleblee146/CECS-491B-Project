@@ -4,7 +4,7 @@
 //
 //  Created by Sebs on 4/8/25./Users/sebs/Documents/GitHub/CECS-491B-Project/MoveMentorApp/MoveMentorApp.xcodeproj
 //
-
+/*
 import SwiftUI
 
 struct ContentView: View {
@@ -21,3 +21,4 @@ struct ContentView: View {
 #Preview{
     ContentView()
 }
+*/

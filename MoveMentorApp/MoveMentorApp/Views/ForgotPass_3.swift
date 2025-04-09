@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct ForgotPass_3: View{
-    var email: String
-    var code: String
-    
     @State private var newPass: String = ""
     @State private var confirmNew: String = ""
     
@@ -23,6 +20,7 @@ struct ForgotPass_3: View{
    
     
     
+    
     var body: some View{
         NavigationStack{
             VStack{
@@ -30,7 +28,7 @@ struct ForgotPass_3: View{
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .padding(.bottom, 50)
                 
-                SecureField("New Password", text: $newPass)
+                TextField("New Password", text: $newPass)
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 347, height: 55)
                     .padding()
@@ -40,7 +38,7 @@ struct ForgotPass_3: View{
                     .disableAutocorrection(true)
                     .padding(.horizontal, 25)
                 
-                SecureField("Confirm New Password", text: $confirmNew)
+                TextField("Confirm New Password", text: $confirmNew)
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 347, height: 55)
                     .padding()
@@ -57,7 +55,9 @@ struct ForgotPass_3: View{
                 
                 Button("CONTINUE"){
                     checkPass()
-                    
+                    if passMatch{
+                        goNext = true
+                    }
                 }
                 .font(Font.custom("Roboto_Condensed-Black", size: 18))
                 .frame(width: 347, height: 55)
@@ -83,64 +83,28 @@ struct ForgotPass_3: View{
             .frame(width: 402, height: 869)
             .background(Color.navy)
             .navigationDestination(isPresented: $goNext){
-                PasswordChangeSuccess()
+                Progress_1_View()
             }
             .navigationDestination(isPresented: $cancel){
-                ForgotPass_2(email: email)
+                ForgotPass_2()
             }
             
         }
         
     }
-    private func checkPass() {
-        guard newPass == confirmNew else {
+    private func checkPass(){
+        if newPass == confirmNew{
+            passMatch = true
+            
+        } else {
             passMatch = false
             passMessage = "The passwords do not match."
-            return
         }
-
-        guard let url = URL(string: "http://127.0.0.1:8000/api/users/confirm-password-reset/") else {
-            print("Invalid URL")
-            return
-        }
-
-        let payload = [
-            "email": email,
-            "code": code,
-            "new_password": newPass
-        ]
-
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
-            print("Failed to encode JSON")
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    passMatch = false
-                    passMessage = "Something went wrong: \(error.localizedDescription)"
-                    return
-                }
-
-                if let httpResponse = response as? HTTPURLResponse {
-                    if httpResponse.statusCode == 200 {
-                        passMatch = true
-                        goNext = true
-                        
-                    } else {
-                        passMatch = false
-                        passMessage = "Unable to update password. Try again."
-                    }
-                }
-            }
-        }.resume()
     }
-    
+}
 
+struct ForgotPass3Preview: PreviewProvider{
+    static var previews: some View{
+        ForgotPass_3()
+    }
 }

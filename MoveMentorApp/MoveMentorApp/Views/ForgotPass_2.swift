@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct ForgotPass_2: View{
-    var email: String
     @State private var goNext = false
     @State private var cancel = false
     
     @State private var verifCode: String = ""
     @State private var verifMatch = false
     @State private var verifMessage = ""
+    
+    private let verificationCode = "12345"
+    
     
     
     var body: some View{
@@ -47,6 +49,9 @@ struct ForgotPass_2: View{
                 
                 Button("CONTINUE"){
                     checkVerif()
+                    if verifMatch{
+                        goNext = true
+                    }
                 }
                 .font(Font.custom("Roboto_Condensed-Black", size: 18))
                 .frame(width: 347, height: 55)
@@ -71,7 +76,7 @@ struct ForgotPass_2: View{
             .frame(width: 402, height: 869)
             .background(Color.navy)
             .navigationDestination(isPresented: $goNext){
-                ForgotPass_3(email: email, code: verifCode)
+                ForgotPass_3()
             }
             .navigationDestination(isPresented: $cancel){
                 ForgotPass_1()
@@ -83,51 +88,21 @@ struct ForgotPass_2: View{
             }
             
         }
-    private func checkVerif() {
-        guard let url = URL(string: "http://127.0.0.1:8000/api/users/confirm-password-reset/") else {
-            print("Invalid URL")
-            return
+    private func checkVerif(){
+        if verifCode == verificationCode{
+            verifMatch = true
+            
+        } else {
+            verifMatch = false
+            verifMessage = "The verification code entered is incorrect."
         }
-
-        let payload = [
-            "email": email,
-            "code": verifCode,
-            "new_password": "TempPass123"
-        ]
-
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
-            print("Failed to encode JSON")
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Network error: \(error)")
-                    verifMatch = false
-                    verifMessage = "Something went wrong. Try again."
-                    return
-                }
-
-                if let httpResponse = response as? HTTPURLResponse {
-                    if httpResponse.statusCode == 200 {
-                        verifMatch = true
-                        verifMessage = ""
-                        goNext = true
-                    } else {
-                        verifMatch = false
-                        verifMessage = "The verification code entered is incorrect."
-                    }
-                }
-            }
-        }.resume()
     }
-
         
     }
 
+
+struct ForgotPass2Preview: PreviewProvider{
+    static var previews: some View{
+        ForgotPass_2()
+    }
+}
