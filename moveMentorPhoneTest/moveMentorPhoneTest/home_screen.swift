@@ -5,42 +5,43 @@ import SwiftUI
 import UIKit
 
 struct HomeScreen: View {
+    @State private var selectedDay: Int?
+    @State private var randomQuote: String
+    @State private var profileImage: Image?
+    @State private var isImagePickerPresented = false
+    
+    @Binding var selectedTab: BottomTab
+    
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+
     let currentMonth: Int
     let currentYear: Int
     let numberOfDays: Int
-    
-    @State private var selectedDay: Int? // Track the selected day
-    @State private var randomQuote: String // Track the random quote
-    @State private var profileImage: Image? // Track selected profile image
-    @State private var isImagePickerPresented = false // Control the presentation of the image picker
-    
-    // Track the selected tab (page)
-    @State private var selectedTab: BottomTab = .home
-    
-    // List of motivational quotes
+
     let quotes = [
-        "“Each day of training\nmakes you a little stronger”",
-        "“The only bad workout is the one that didn’t happen.”",
-        "“Success is the sum of small efforts, repeated day in and day out.”",
-        "“Your body can stand almost anything. It’s your mind that you have to convince.”",
-        "“Push yourself because no one else is going to do it for you.”"
+        "\"Each day of training\nmakes you a little stronger\"",
+        "\"The only bad workout is the one that didn’t happen.\"",
+        "\"Success is the sum of small efforts, repeated day in and day out.\"",
+        "\"Your body can stand almost anything. It’s your mind that you have to convince.\"",
+        "\"Push yourself because no one else is going to do it for you.\""
     ]
-    
-    init() {
+
+    init(selectedTab: Binding<BottomTab>) {
         let calendar = Calendar.current
         let currentDate = Date()
+        self._selectedTab = selectedTab
         self.currentMonth = calendar.component(.month, from: currentDate)
         self.currentYear = calendar.component(.year, from: currentDate)
         self.numberOfDays = calendar.range(of: .day, in: .month, for: currentDate)?.count ?? 30
-        // Set the selectedDay to the current day
-        self._selectedDay = State(initialValue: calendar.component(.day, from: currentDate)) // Default to today
-        
-        // Set the random quote on initialization
-        self._randomQuote = State(initialValue: quotes.randomElement() ?? quotes[0]) // Pick a random quote
+        self._selectedDay = State(initialValue: calendar.component(.day, from: currentDate))
+        self._randomQuote = State(initialValue: quotes.randomElement() ?? quotes[0])
     }
-    
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 // Top Section
                 HStack {
@@ -48,22 +49,19 @@ struct HomeScreen: View {
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.leading, 16)
-                    
+
                     Spacer()
-                    
-                    // Profile Picture (Customizable)
+
                     Button(action: {
-                        // Present image picker when tapped
                         isImagePickerPresented.toggle()
                     }) {
-                        // Show the selected image or default profile picture
                         profileImage?.resizable()
                             .scaledToFill()
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.white, lineWidth: 2))
                             .padding(.trailing, 16)
-                            ?? Image("default_profile") // Replace with your default image name
+                            ?? Image("default_profile")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 50, height: 50)
@@ -73,15 +71,13 @@ struct HomeScreen: View {
                     }
                 }
                 .padding(.top, 16)
-                .background(Color(hex: "#353A50")) // Background color for top section of screen
-                
-                // Progress Section
+                .background(Color(hex: "#353A50"))
+
                 Text("Let's look at your Progress!")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
                     .padding(.top, 16)
-                
-                // Dynamically Generated Days of the Month
+
                 ScrollViewReader { proxy in
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
@@ -89,19 +85,13 @@ struct HomeScreen: View {
                                 Text("\(day)")
                                     .font(.system(size: 16, weight: .bold))
                                     .frame(width: 40, height: 40)
-                                    .background(self.selectedDay == day ? Color.pink : Color.gray) // Change color based on selection
+                                    .background(self.selectedDay == day ? Color.pink : Color.gray)
                                     .foregroundColor(.white)
                                     .clipShape(Circle())
-                                    .id(day) // Add an ID to each day
+                                    .id(day)
                                     .onTapGesture {
-                                        // Change selected day when tapped
                                         withAnimation {
-                                            // Set selected day, if the tapped day is already selected, reset to nil
-                                            if self.selectedDay == day {
-                                                self.selectedDay = nil // Deselect if tapped on the same day
-                                            } else {
-                                                self.selectedDay = day // Select the new day
-                                            }
+                                            self.selectedDay = self.selectedDay == day ? nil : day
                                         }
                                     }
                             }
@@ -110,47 +100,28 @@ struct HomeScreen: View {
                     }
                     .padding(.top, 8)
                     .onAppear {
-                        // Scroll to the current day when the view appears
                         if let selectedDay = self.selectedDay {
-                            proxy.scrollTo(selectedDay, anchor: .center) // Scroll to the current day
+                            proxy.scrollTo(selectedDay, anchor: .center)
                         }
                     }
                 }
-                
-                // Scrollable Workout Cards
+
                 ScrollView {
                     VStack(spacing: 24) {
                         NavigationLink(destination: WorkoutDetailPage(workoutTitle: "Chest Workout", exercises: ["Push Ups", "Bench Press", "Chest Fly"])) {
                             WorkoutCard(imageName: "chest_workout", title: "Today's workout", subtitle: "Chest")
                         }
-                        NavigationLink(destination: WorkoutDetailPage(workoutTitle: "Quads & Deltoids", exercises: ["Squats", "Leg Press", "Shoulder Press"])) {
-                            WorkoutCard(imageName: "quad_workout", title: "Quads", subtitle: "7 Exercises", difficulty: "Easy")
-                        }
-                        NavigationLink(destination: WorkoutDetailPage(workoutTitle: "Push up Routine", exercises: ["Standard Push-ups", "Diamond Push-ups", "Incline Push-ups"])) {
-                            WorkoutCard(imageName: "push_up", title: "Push up Routine", subtitle: "12 Exercises", difficulty: "Medium")
-                        }
                     }
                     .padding(.horizontal, 16)
                 }
                 .padding(.top, 16)
-                
-                
-                // Bottom Navigation
-                Group {
-                        switch selectedTab {
-                        case .home:
-                            HomeContent()
-                        case .workout:
-                            WorkoutView()
-                        case .profile:
-                            Progress_1_View(selectedTab: $selectedTab)
-                        case .explore:
-                            ExploreView()
-                        case .settings:
-                            SettingsView()
-                        }
-                    }
-                
+
+                // Navigation destinations trigger
+                NavigationLink(destination: WorkoutView(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View(selectedTab: $selectedTab), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
+                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
+
                 HStack {
                     Spacer()
                     BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
@@ -158,35 +129,35 @@ struct HomeScreen: View {
                     }
                     Spacer()
                     BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
-                        selectedTab = .workout
+                        goToWorkout = true
                     }
                     Spacer()
                     BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
-                        selectedTab = .profile
+                        goToProfile = true
                     }
                     Spacer()
                     BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
-                        selectedTab = .explore
+                        goToExplore = true
                     }
                     Spacer()
                     BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
-                        selectedTab = .settings
+                        goToSettings = true
                     }
                     Spacer()
                 }
                 .padding()
-                .background(Color(hex: "2A2E43").opacity(0.8))// Background color of bottom nav
+                .background(Color(hex: "2A2E43").opacity(0.8))
                 .clipShape(Capsule())
                 .padding(.bottom, 1)
             }
-            .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all)) // Color of entire background
+            .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all))
             .sheet(isPresented: $isImagePickerPresented) {
-                ImagePicker(isPresented: $isImagePickerPresented, image: $profileImage) // ImagePicker for profile picture
+                ImagePicker(isPresented: $isImagePickerPresented, image: $profileImage)
             }
         }
-        
     }
 }
+
 
 // UIImagePickerController wrapper using UIViewControllerRepresentable
 struct ImagePicker: UIViewControllerRepresentable {
@@ -360,7 +331,7 @@ struct HomeContent: View {
 //Preview
 struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
-        HomeScreen()
+        HomeScreen(selectedTab: .constant(.home))
     }
 }
 

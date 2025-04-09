@@ -101,20 +101,6 @@ struct Progress_2_View: View {
                 }
                 
                 // Tab Navigation
-                Group {
-                    switch selectedTab {
-                    case .home:
-                        HomeContent()
-                    case .workout:
-                        WorkoutView()
-                    case .profile:
-                        Color.clear
-                    case .explore:
-                        ExploreView()
-                    case .settings:
-                        SettingsView()
-                    }
-                }
                 
                 BottomNavigationBar(selectedTab: $selectedTab)
                     .padding(.bottom, 10)
@@ -122,10 +108,10 @@ struct Progress_2_View: View {
             .frame(width: 402, height: 869)
             .background(Color.navy)
             .navigationBarBackButtonHidden(true)
-            .navigationDestination(isPresented: $goToAnalytics) {
+            .fullScreenCover(isPresented: $goToAnalytics) {
                 Progress_1_View(selectedTab: $selectedTab)
             }
-            .navigationDestination(isPresented: $goToStats) {
+            .fullScreenCover(isPresented: $goToStats) {
                 Progress_3_View(selectedTab: $selectedTab)
             }
         }

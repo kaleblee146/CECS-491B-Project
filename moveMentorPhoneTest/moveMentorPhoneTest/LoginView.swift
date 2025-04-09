@@ -13,6 +13,8 @@ struct LoginView: View {
     @EnvironmentObject var session: UserSession
     @StateObject private var authVM: LoginAuthViewModel
     
+    @State private var selectedTab: BottomTab = .home
+
     
     @State private var signUp = false
     @State private var navigateToNext = false
@@ -50,6 +52,7 @@ struct LoginView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                     .padding(.bottom, 10)
                 
@@ -59,6 +62,7 @@ struct LoginView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                     .padding(.bottom, 10)
                 
@@ -73,8 +77,8 @@ struct LoginView: View {
                 .buttonStyle(BorderlessButtonStyle())
                 .padding(.bottom, 10)
                 .navigationDestination(isPresented: $navigateToNext) {
-                    HomeScreen()
-                        .environmentObject(session)
+                    MainTabController()
+                            .environmentObject(session)
                 }
                 
                 

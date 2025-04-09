@@ -35,7 +35,7 @@ class RegisterAuthViewModel: ObservableObject {
     }
     
     func register(user: RegisterRequest){
-        guard let url = URL(string: "http://127.0.0.1:8000/api/users/register/") else { return }
+        guard let url = URL(string: "http://52.53.157.43:8000/api/register/") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

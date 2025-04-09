@@ -74,30 +74,16 @@ struct Progress_3_View: View {
                 }
                 
                 // Bottom Tab Routing
-                Group {
-                    switch selectedTab {
-                    case .home:
-                        HomeContent()
-                    case .workout:
-                        WorkoutView()
-                    case .profile:
-                        Color.clear
-                    case .explore:
-                        ExploreView()
-                    case .settings:
-                        SettingsView()
-                    }
-                }
                 
                 BottomNavigationBar(selectedTab: $selectedTab)
                     .padding(.bottom, 10)
             }
             .frame(width: 402, height: 869)
             .background(Color.navy)
-            .navigationDestination(isPresented: $goToAnalytics) {
+            .fullScreenCover(isPresented: $goToAnalytics) {
                 Progress_1_View(selectedTab: $selectedTab)
             }
-            .navigationDestination(isPresented: $goToCalendar) {
+            .fullScreenCover(isPresented: $goToCalendar) {
                 Progress_2_View(selectedTab: $selectedTab)
             }
         }

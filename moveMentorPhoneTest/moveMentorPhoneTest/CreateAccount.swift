@@ -43,12 +43,14 @@ struct CreateAccountView: View {
                         .font(Font.custom("Roboto_condensed-black", size: 24))
                         .padding(.bottom, 15)
                     
+                    
                     TextField("First Name", text: $firstName)
                         .padding()
                         .background(Color.textBoxNavy)
                         .foregroundColor(.white)
                         .cornerRadius(8)
                         .disableAutocorrection(true)
+                        .colorScheme(.dark)
                         .padding(.horizontal, 25)
                         .padding(.bottom, 5)
                     
@@ -58,6 +60,7 @@ struct CreateAccountView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                         .disableAutocorrection(true)
+                        .colorScheme(.dark)
                         .padding(.horizontal, 25)
                         .padding(.bottom, 5)
                     
@@ -67,6 +70,7 @@ struct CreateAccountView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                         .disableAutocorrection(true)
+                        .colorScheme(.dark)
                         .padding(.horizontal, 25)
                         .padding(.bottom, 5)
                     
@@ -76,6 +80,7 @@ struct CreateAccountView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                         .disableAutocorrection(true)
+                        .colorScheme(.dark)
                         .padding(.horizontal, 25)
                         .padding(.bottom, 5)
                     
@@ -85,6 +90,7 @@ struct CreateAccountView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                         .disableAutocorrection(true)
+                        .colorScheme(.dark)
                         .padding(.horizontal, 25)
                         .padding(.bottom, 5)
                     
@@ -104,6 +110,7 @@ struct CreateAccountView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                         .disableAutocorrection(true)
+                        .colorScheme(.dark)
                         .padding(.horizontal, 25)
                         .padding(.bottom, 20)
                     
@@ -185,6 +192,7 @@ struct CreateAccountView: View {
                     .padding(.top, 10)
                 }
                 .frame(width: geometry.size.width)
+                .background(Color.navy)
                 .padding(.top, -40)
             
             }

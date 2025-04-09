@@ -7,7 +7,7 @@ struct Progress_1_View: View {
     @State private var goToCalendar = false
     @State private var selectedButton: Int? = nil
     
-    @Binding var selectedTab: BottomTab
+    @Binding var selectedTab: BottomTab 
     
     var body: some View {
         NavigationStack {
@@ -81,44 +81,32 @@ struct Progress_1_View: View {
                 .frame(height: 300)
                 
                 // Tab Navigation View Switch
-                Group {
-                    switch selectedTab {
-                    case .home:
-                        HomeContent()
-                    case .workout:
-                        WorkoutView()
-                    case .profile:
-                        Color.clear // Avoid recursion
-                    case .explore:
-                        ExploreView()
-                    case .settings:
-                        SettingsView()
-                    }
-                }
                 
+
                 // Bottom Nav Bar
-                BottomNavigationBar(selectedTab: $selectedTab)
-                    .padding(.bottom, 10)
+               
             }
             .frame(width: 402, height: 869)
             .ignoresSafeArea(edges: .bottom)
-            .background(Color.navy)
+            .background(Color.navy.ignoresSafeArea())
             .onAppear {
                 print("👀 Progress_1_View sees: \(session.firstName) \(session.lastName)")
             }
             
-            // NavigationLinks using isActive bindings
-            NavigationLink(destination: Progress_2_View(selectedTab: $selectedTab), isActive: $goToCalendar) {
-                EmptyView()
-            }
-            .hidden()
+            
+            
+            
+        }
+        .fullScreenCover(isPresented: $goToCalendar) {
+            Progress_2_View(selectedTab: $selectedTab)
+        }
+        
 
-            NavigationLink(destination: Progress_3_View(selectedTab: $selectedTab), isActive: $goToStats) {
-                EmptyView()
-            }
-            .hidden()
+        .fullScreenCover(isPresented: $goToStats) {
+            Progress_3_View(selectedTab: $selectedTab)
         }
     }
+    
 }
 
 struct ProgressCard: View {

@@ -30,6 +30,7 @@ struct SurveyView4: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                     .padding(.bottom, 100)
                     

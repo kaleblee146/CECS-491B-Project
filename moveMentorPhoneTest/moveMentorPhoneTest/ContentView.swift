@@ -34,7 +34,7 @@
                                 .font(Font.custom("Roboto_Condensed-Black", size: 40))
                                 .padding(.top, 30)
                             
-                            Text("Sculp Your Body")
+                            Text("Sculpt Your Body")
                                 .font(Font.custom("Roboto_Condensed-Black", size: 27))
                                 .padding(.top, 50)
                             
