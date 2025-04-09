@@ -90,7 +90,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'  # Needed for the iframe to work
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "movementor-django-db",  # Replace with your database name
+        "NAME": "movementor_django_db",  # Replace with your database name
         "USER": "MoveMentor",  # Replace with your database user
         "PASSWORD": "mentorMove123!",  # Replace with your database password
         "HOST": "movementor-django-db.cfuoimgmmxni.us-west-1.rds.amazonaws.com",
