@@ -1,19 +1,27 @@
 # Backend App
 
 ## Overview
-The Backend app serves as the core module for shared utilities and common functionalities across the MoveMentor project. It is a default Django app that provides foundational support for other feature-specific apps.
+The Backend app serves as the project configuration module for the MoveMentor project. It contains the main settings, URL routing, and deployment configurations.
 
 ## Structure
 
 - **__init__.py:** Marks this directory as a Python package.
-- **admin.py:** Registers any shared models for admin access.
-- **apps.py:** Configuration for the backend app.
-- **models.py:** Contains base models and abstract classes for reuse.
-- **tests.py:** Unit tests for shared functionality.
-- **views.py:** Houses shared view logic or helper functions.
-- **migrations/:** Manages database schema migrations for shared models.
+- **settings.py:** Contains project-wide Django settings.
+- **urls.py:** Main URL routing for the project.
+- **wsgi.py:** WSGI configuration for web server deployment.
+- **asgi.py:** ASGI configuration for asynchronous server support.
+- **routing.py:** Channel routing for WebSocket support.
+- **dash_app/:** Contains Plotly Dash integration.
+- **middleware/:** Custom middleware components.
+
+## Key Features
+- **Authentication Configuration:** JWT and session-based authentication setup.
+- **Database Configuration:** PostgreSQL connection settings.
+- **CORS Configuration:** Cross-origin request settings.
+- **Channel Layers:** WebSocket communication setup.
 
 ## Future Plans
-- **Utility Enhancements:** Expand helper functions and utilities for broader reuse.
-- **Middleware and Context Processors:** Implement custom middleware to streamline common processes.
-- **Refactor Shared Logic:** Consolidate overlapping functionality from other apps as needed.
+- **Environment-Specific Settings:** Enhance configuration for different environments.
+- **Security Hardening:** Implement additional security measures.
+- **Performance Optimization:** Add caching and optimization configurations.
+- **Monitoring Integration:** Add application monitoring and logging services.
