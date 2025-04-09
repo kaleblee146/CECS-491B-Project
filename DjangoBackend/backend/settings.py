@@ -38,8 +38,14 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     'rest_framework.authtoken',
     # Apps
+    "analytics",
+    "core",
+    "notifications",
+    "plans",
+    "resources",
     "users",
     "workouts",
+
     # Cross-Origin Requests
     "corsheaders"
 ]
