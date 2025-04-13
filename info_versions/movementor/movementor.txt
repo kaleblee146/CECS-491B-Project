@@ -1,0 +1,2 @@
+this is the original info file for the project before the camera changes were made
+
