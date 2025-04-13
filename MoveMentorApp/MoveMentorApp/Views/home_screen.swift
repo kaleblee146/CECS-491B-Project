@@ -8,6 +8,12 @@ struct HomeScreen: View {
     let currentMonth: Int
     let currentYear: Int
     let numberOfDays: Int
+
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+
     
     @State private var selectedDay: Int? // Track the selected day
     @State private var randomQuote: String // Track the random quote
