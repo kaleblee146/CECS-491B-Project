@@ -134,7 +134,9 @@ struct HomeScreen: View {
                 }
                 .padding(.top, 16)
                 // Navigation destinations trigger
-                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                //MARK: Navigation Links
+
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }
                 NavigationLink(destination: Progress_1_View(selectedTab: $selectedTab), isActive: $goToProfile) { EmptyView() }.hidden()
                 NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
                 NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
