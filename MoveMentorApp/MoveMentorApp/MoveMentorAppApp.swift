@@ -11,7 +11,8 @@ import SwiftUI
 struct MoveMentorAppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeScreen()
+            //ContentView()
         }
     }
 }
