@@ -1,0 +1,105 @@
+<!-- templates/terms.html -->
+{% extends 'base.html' %}
+
+{% block title %}Terms and Conditions{% endblock %}
+
+{% block extra_css %}
+<style>
+    .terms-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: var(--lighter-dark);
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .terms-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .terms-content {
+        margin-bottom: 2rem;
+    }
+    
+    .terms-content h3 {
+        color: var(--primary-color);
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .terms-content p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .terms-footer {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .back-button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .back-button:hover {
+        background-color: #c04c6c;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="terms-container">
+        <div class="terms-header">
+            <h1>Terms and Conditions</h1>
+            <p>Last updated: March 19, 2025</p>
+        </div>
+        
+        <div class="terms-content">
+            <h3>1. Acceptance of Terms</h3>
+            <p>By accessing or using Move Mentor, you agree to be bound by these Terms and Conditions and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.</p>
+            
+            <h3>2. Use License</h3>
+            <p>Permission is granted to temporarily use the Move Mentor application for personal, non-commercial use only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+            <ul>
+                <li>Modify or copy the materials</li>
+                <li>Use the materials for any commercial purpose</li>
+                <li>Attempt to decompile or reverse engineer any software contained in Move Mentor</li>
+                <li>Remove any copyright or other proprietary notations from the materials</li>
+                <li>Transfer the materials to another person or "mirror" the materials on any other server</li>
+            </ul>
+            
+            <h3>3. Disclaimer</h3>
+            <p>The materials on Move Mentor are provided on an 'as is' basis. Move Mentor makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+            
+            <h3>4. Fitness and Health Disclaimer</h3>
+            <p>Move Mentor provides fitness and exercise information and is intended for educational purposes only. You should consult your physician or other health care professional before starting this or any other fitness program to determine if it is right for your needs.</p>
+            
+            <h3>5. Limitations</h3>
+            <p>In no event shall Move Mentor or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use Move Mentor, even if Move Mentor or a Move Mentor authorized representative has been notified orally or in writing of the possibility of such damage.</p>
+            
+            <h3>6. Account Security</h3>
+            <p>You are responsible for safeguarding the password that you use to access the service and for any activities or actions under your password. Move Mentor encourages you to use a strong password (e.g., a combination of upper and lower case letters, numbers, and symbols) with your account.</p>
+            
+            <h3>7. Privacy Policy</h3>
+            <p>Your use of Move Mentor is also governed by our Privacy Policy, which is incorporated into these Terms by this reference.</p>
+            
+            <h3>8. Modifications</h3>
+            <p>Move Mentor may revise these Terms of Service at any time without notice. By using this application, you are agreeing to be bound by the then current version of these Terms of Service.</p>
+        </div>
+        
+        <div class="terms-footer">
+            <a href="{% url 'register' %}" class="back-button">Back to Sign Up</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
