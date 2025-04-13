@@ -142,7 +142,7 @@ struct HomeScreen: View {
                 // Navigation destinations trigger
                 //MARK: Navigation Links
 
-                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }
+                NavigationLink(destination: Camera(), isActive: $goToWorkout) { EmptyView() }.hidden()
                 
                 
                 /*
@@ -162,6 +162,7 @@ struct HomeScreen: View {
                     Spacer()
                     BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
                         selectedTab = .workout
+                        goToWorkout = true
                     }
                     Spacer()
                     BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
