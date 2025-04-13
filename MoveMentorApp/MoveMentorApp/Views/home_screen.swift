@@ -142,7 +142,7 @@ struct HomeScreen: View {
                 // Navigation destinations trigger
                 //MARK: Navigation Links
 
-                NavigationLink(destination: Camera(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
                 
                 
                 /*
