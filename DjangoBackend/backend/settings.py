@@ -16,10 +16,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'movementor.app',
-    'www.movementor.app'
+    'www.movementor.app',
     '52.53.157.43',
     'ec2-52-53-157-43.us-west-1.compute.amazonaws.com',
-    'localhost', '127.0.0.1' # while still testing locally
+    'localhost', '127.0.0.1', # while still testing locally
 ]
 
 
