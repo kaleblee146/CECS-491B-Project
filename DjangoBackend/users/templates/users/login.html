@@ -4,6 +4,15 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<div class="status-bar">
+    <div class="time">9:41</div>
+    <div class="icons">
+        <span>•••</span>
+        <span>📶</span>
+        <span>🔋</span>
+    </div>
+</div>
+
 <img src="/static/images/workout-bg.jpg" alt="Workout Background" class="background-image">
 <div class="container">
     <h2>Welcome back</h2>
@@ -36,6 +45,10 @@
             <img src="/static/images/apple-icon.svg" alt="Apple">
             Sign in with Apple
         </button>
+    </div>
+
+    <div class="forgot-password">
+        <a href="{% url 'password_reset' %}" class="footer-link">Forgot your password?</a>
     </div>
     
     <div class="footer-text">
