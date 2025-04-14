@@ -15,7 +15,9 @@ SECRET_KEY = "django-insecure-1a_uj6_vp)%%l5-dnfwt^q_h0a=lnnrp3gwkog8$zmrh&ze&!o
 DEBUG = True
 
 ALLOWED_HOSTS = [
-     '52.53.157.43',
+    'movementor.app',
+    'www.movementor.app'
+    '52.53.157.43',
     'ec2-52-53-157-43.us-west-1.compute.amazonaws.com',
     'localhost', '127.0.0.1' # while still testing locally
 ]
