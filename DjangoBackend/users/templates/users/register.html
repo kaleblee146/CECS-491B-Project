@@ -4,107 +4,58 @@
 
 {% block content %}
 <div class="container">
-    <h2>Create an account</h2>
+  <h2>Create an account</h2>
 
-    <form method="post" action="{% url 'register' %}">
-        {% csrf_token %}
+  <form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
 
-        {# display any field or non‑field errors #}
-        {% if form.errors %}
-            <ul class="errorlist">
-                {# field errors #}
-                {% for field in form %}
-                    {% for err in field.errors %}
-                        <li>{{ err }}</li>
-                    {% endfor %}
-                {% endfor %}
-                {# non‑field errors (e.g. password mismatch) #}
-                {% for err in form.non_field_errors %}
-                    <li>{{ err }}</li>
-                {% endfor %}
-            </ul>
+    {# non‑field errors (e.g. password mismatch) #}
+    {% if form.non_field_errors %}
+      <ul class="errorlist">
+        {% for err in form.non_field_errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {# loop through each field and render it #}
+    {% for field in form %}
+      <div class="form-group">
+        {{ field }}               {# renders <input> with your widget attrs #}
+        {% if field.errors %}
+          <ul class="errorlist">
+            {% for err in field.errors %}
+              <li>{{ err }}</li>
+            {% endfor %}
+          </ul>
         {% endif %}
-
-        <div class="form-group">
-            <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                value="{{ form.username.value }}"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value="{{ form.email.value }}"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <input
-                type="tel"
-                name="phone"
-                placeholder="Phone"
-                value="{{ form.phone.value }}"
-            >
-        </div>
-
-        <div class="form-group">
-            <input
-                type="date"
-                name="dob"
-                placeholder="Date of birth"
-                value="{{ form.dob.value }}"
-            >
-        </div>
-
-        <div class="form-group">
-            <input
-                type="password"
-                name="password1"
-                placeholder="Password"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <input
-                type="password"
-                name="password2"
-                placeholder="Confirm Password"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">CONTINUE</button>
-        </div>
-    </form>
-
-    <div class="divider"><span>or</span></div>
+      </div>
+    {% endfor %}
 
     <div class="form-group">
-        <button class="btn btn-social">
-            <img src="/static/images/google-icon.svg" alt="Google">
-            Sign Up with Google
-        </button>
+      <button type="submit" class="btn btn-primary">CONTINUE</button>
     </div>
+  </form>
 
-    <div class="form-group">
-        <button class="btn btn-social">
-            <img src="/static/images/apple-icon.svg" alt="Apple">
-            Sign Up with Apple
-        </button>
-    </div>
+  <div class="divider"><span>or</span></div>
 
-    <div class="terms-text">
-        By clicking Sign up you agree to the following<br>
-        <a href="{% url 'terms' %}" class="footer-link">Terms and Conditions</a> without reservation
-    </div>
+  <div class="form-group">
+    <button class="btn btn-social">
+      <img src="/static/images/google-icon.svg" alt="Google">
+      Sign Up with Google
+    </button>
+  </div>
+
+  <div class="form-group">
+    <button class="btn btn-social">
+      <img src="/static/images/apple-icon.svg" alt="Apple">
+      Sign Up with Apple
+    </button>
+  </div>
+
+  <div class="terms-text">
+    By clicking Sign up you agree to the following<br>
+    <a href="{% url 'terms' %}" class="footer-link">Terms and Conditions</a> without reservation
+  </div>
 </div>
 {% endblock %}
