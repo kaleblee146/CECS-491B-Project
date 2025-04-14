@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 # ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'core.middleware.RequestLoggingMiddleware',
 
     # CORS (for API testing only—lock this down later!)
     "corsheaders.middleware.CorsMiddleware",
