@@ -10,6 +10,7 @@ The Core app serves as a foundation for shared components, utilities, and base m
 - **apps.py:** Configuration for the core app.
 - **models.py:** Contains base models, abstract classes, and shared enums (like BodySegment).
 - **tests.py:** Unit tests for core functionality.
+- **urls.py** Defines URL patterns and routes requests to views.
 - **migrations/:** Manages database schema migrations for core models.
 
 ## Models

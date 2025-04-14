@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm       # ← your custom form
 from django.contrib.auth.decorators import login_required
 from rest_framework.generics import ListAPIView
 from rest_framework.serializers import ModelSerializer
@@ -11,7 +11,6 @@ from rest_framework.permissions import BasePermission, IsAuthenticated
 from .models import CustomUser, UserRoles
 from .serializers import RegisterSerializer
 from django.shortcuts import render, redirect
-
 
 # Correct Permission Class
 class IsAdminUserOnly(BasePermission):
@@ -123,14 +122,14 @@ def login_view(request):
 # Renders register.html
 def registration_view(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect("home")  # Redirect to home after signup
     else:
-        form = UserCreationForm()
-    return render(request, "users/register.html", {"form": form})
+        form = CustomUserCreationForm()
+    return render(request, "register.html", {"form": form})
 
 # Password reset
 @api_view(['POST'])

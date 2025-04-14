@@ -12,6 +12,7 @@ The Plans app manages workout programming, scheduling, and progression planning 
 - **tests.py:** Unit tests for plan functionality.
 - **views.py:** Handles business logic for managing workout plans.
 - **migrations/:** Manages database schema changes.
+- **templates/:** Contains templates for displaying plan information.
 
 ## Models
 
@@ -33,4 +34,3 @@ Specific exercises included in a planned workout with set/rep schemes.
 - **Calendar Integration:** Add features for syncing workout plans with calendar apps.
 - **Social Sharing:** Enable users to share and discover workout plans.
 - **forms.py:** Defines forms for creating and editing workout plans.
-- **templates/:** Contains templates for displaying plan information.
