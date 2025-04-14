@@ -8,6 +8,12 @@ struct HomeScreen: View {
     let currentMonth: Int
     let currentYear: Int
     let numberOfDays: Int
+
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+
     
     @State private var selectedDay: Int? // Track the selected day
     @State private var randomQuote: String // Track the random quote
@@ -133,7 +139,20 @@ struct HomeScreen: View {
                     .padding(.horizontal, 16)
                 }
                 .padding(.top, 16)
+                // Navigation destinations trigger
+                //MARK: Navigation Links
+
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
                 
+                
+                /*
+                NavigationLink(destination: Progress_1_View(selectedTab: $selectedTab), isActive: $goToProfile) { EmptyView() }.hidden()
+                
+                
+                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
+                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
+                */
+
                 // Bottom Navigation
                 HStack {
                     Spacer()
@@ -143,6 +162,7 @@ struct HomeScreen: View {
                     Spacer()
                     BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
                         selectedTab = .workout
+                        goToWorkout = true
                     }
                     Spacer()
                     BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
