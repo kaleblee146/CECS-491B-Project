@@ -3,16 +3,16 @@
 
 {% block title %}Sign Up{% endblock %}
 
-{% block content %}
-<div class="status-bar">
-    <div class="time">9:41</div>
-    <div class="icons">
-        <span>•••</span>
-        <span>📶</span>
-        <span>🔋</span>
-    </div>
-</div>
+{% block extra_css %}
+<style>
+    .container {
+        justify-content: flex-start;
+        padding-top: 1rem;
+    }
+</style>
+{% endblock %}
 
+{% block content %}
 <a href="{% url 'welcome' %}" class="back-button">
     ← Back
 </a>
@@ -22,6 +22,15 @@
 
   <form method="post" action="{% url 'register' %}">
     {% csrf_token %}
+
+    {# non‑field errors (e.g. password mismatch) #}
+    {% if form.non_field_errors %}
+      <ul class="errorlist">
+        {% for err in form.non_field_errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
     <div class="form-group">
       <input type="text" name="username" placeholder="Username" required>
