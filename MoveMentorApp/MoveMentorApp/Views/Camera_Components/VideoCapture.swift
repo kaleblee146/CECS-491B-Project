@@ -10,16 +10,14 @@ import AVFoundation
 import UIKit
 
 // MARK: - Delegate Protocol
-
 protocol VideoCaptureDelegate: AnyObject {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?)
 }
 
 // MARK: - Camera Manager
-
 class VideoCapture: NSObject {
-    
     weak var delegate: VideoCaptureDelegate?
+
     private let captureSession = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
     private let videoQueue = DispatchQueue(label: "videoQueue")
@@ -39,8 +37,10 @@ class VideoCapture: NSObject {
 
         if captureSession.canAddOutput(videoOutput) {
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
+            videoOutput.alwaysDiscardsLateVideoFrames = true
             captureSession.addOutput(videoOutput)
 
+            // ✅ Fix the orientation natively
             if let connection = videoOutput.connection(with: .video),
                connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
@@ -64,11 +64,9 @@ class VideoCapture: NSObject {
 }
 
 // MARK: - Frame Output
-
 extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         delegate?.videoCapture(self, didCapturePixelBuffer: pixelBuffer)
     }
 }
-
