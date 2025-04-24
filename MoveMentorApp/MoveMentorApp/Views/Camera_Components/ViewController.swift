@@ -69,7 +69,8 @@ extension ViewController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
     guard let pixelBuffer = pixelBuffer,
           let cgImage = pixelBuffer.toCGImage(),
-         // let rotatedImage = cgImage.rotated(by: .pi / 2) else { // 90° clockwise
+         // let rotatedImage = cgImage.rotated(by: .pi / 2) else 
+         { // 90° clockwise
         return
     }
 
