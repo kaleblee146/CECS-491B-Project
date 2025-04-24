@@ -67,17 +67,16 @@ class ViewController: UIViewController {
 
 extension ViewController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
-    guard let pixelBuffer = pixelBuffer,
-          let cgImage = pixelBuffer.toCGImage(),
-         // let rotatedImage = cgImage.rotated(by: .pi / 2) else 
-         { // 90° clockwise
-        return
-    }
+        guard let pixelBuffer = pixelBuffer,
+              let cgImage = pixelBuffer.toCGImage() else {
+            return
+        }
 
-    self.lastFrame = cgImage
-    poseNet.predict(cgImage)
+        self.lastFrame = cgImage
+        poseNet.predict(cgImage)
+    }
 }
-}
+
 
 
 // MARK: - PoseNetDelegate
