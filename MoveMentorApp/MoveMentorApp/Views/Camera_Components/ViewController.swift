@@ -74,7 +74,7 @@ extension ViewController: VideoCaptureDelegate {
         return
     }
 
-    self.lastFrame = rotatedImage
+    //self.lastFrame = rotatedImage
     poseNet.predict(rotatedImage)
 }
 }
