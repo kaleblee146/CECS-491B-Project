@@ -18,8 +18,8 @@ protocol VideoCaptureDelegate: AnyObject {
 // MARK: - Camera Manager
 
 class VideoCapture: NSObject {
+    
     weak var delegate: VideoCaptureDelegate?
-
     private let captureSession = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
     private let videoQueue = DispatchQueue(label: "videoQueue")
@@ -40,6 +40,11 @@ class VideoCapture: NSObject {
         if captureSession.canAddOutput(videoOutput) {
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
             captureSession.addOutput(videoOutput)
+
+            if let connection = videoOutput.connection(with: .video),
+               connection.isVideoOrientationSupported {
+                connection.videoOrientation = .portrait
+                
         } else {
             completion(false)
             return
