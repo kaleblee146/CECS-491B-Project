@@ -44,7 +44,7 @@ class VideoCapture: NSObject {
             if let connection = videoOutput.connection(with: .video),
                connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
-                
+            }
         } else {
             completion(false)
             return
