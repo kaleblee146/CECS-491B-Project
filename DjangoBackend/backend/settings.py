@@ -15,9 +15,15 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
 ]
+# allow extra hosts injected at deploy time
+extra_hosts = os.getenv("ALLOWED_HOSTS_EXTRA", "")
+if extra_hosts:
+    ALLOWED_HOSTS += [h.strip() for h in extra_hosts.split(",") if h.strip()]
+
 CSRF_TRUSTED_ORIGINS = [
     "https://movementor.app",
     "https://www.movementor.app",
+    "https://movementor-blue.us-west-2.elasticbeanstalk.com",
 ]
 # Behind nginx terminating SSL:
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
