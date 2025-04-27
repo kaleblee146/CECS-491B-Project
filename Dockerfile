@@ -19,5 +19,8 @@ COPY DjangoBackend/ ./
 # ---- collect static assets ----
 RUN python manage.py collectstatic --noinput
 
+# ---- container port ----
+EXPOSE 8000
+
 # ---- runtime command ----
 CMD ["gunicorn", "backend.wsgi:application", "-b", "0.0.0.0:8000"]
