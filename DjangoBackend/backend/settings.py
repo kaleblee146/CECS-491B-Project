@@ -11,6 +11,7 @@ DEBUG = True  # Change to False in production!
 ALLOWED_HOSTS = [
     "movementor.app",
     "www.movementor.app",
+    "api.movementor.app",
     "52.53.157.43",
     "ec2-52-53-157-43.us-west-1.compute.amazonaws.com",
     "localhost",
