@@ -8,6 +8,12 @@ struct HomeScreen: View {
     let currentMonth: Int
     let currentYear: Int
     let numberOfDays: Int
+
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+
     
     @State private var selectedDay: Int? // Track the selected day
     @State private var randomQuote: String // Track the random quote
@@ -133,31 +139,9 @@ struct HomeScreen: View {
                     .padding(.horizontal, 16)
                 }
                 .padding(.top, 16)
-                
-                // Bottom Navigation
-                HStack {
-                    Spacer()
-                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
-                        selectedTab = .home
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
-                        selectedTab = .workout
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
-                        selectedTab = .profile
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
-                        selectedTab = .explore
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
-                        selectedTab = .settings
-                    }
-                    Spacer()
-                }
+                // Navigation destinations trigger
+                //MARK: Navigation Links
+                HomeNavBarView()
                 .padding()
                 .background(Color(hex: "2A2E43").opacity(0.8))// Background color of bottom nav
                 .clipShape(Capsule())
@@ -303,18 +287,7 @@ struct WorkoutDetailPage: View {
     }
 }
 
-//Color wheel
-extension Color {
-    init(hex: String) {
-        let hex = hex.replacingOccurrences(of: "#", with: "")
-        var int = UInt64()
-        Scanner(string: hex).scanHexInt64(&int)
-        let red = Double((int >> 16) & 0xFF) / 255.0
-        let green = Double((int >> 8) & 0xFF) / 255.0
-        let blue = Double(int & 0xFF) / 255.0
-        self.init(red: red, green: green, blue: blue)
-    }
-}
+
 //Preview
 struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {

@@ -28,6 +28,7 @@ struct SurveyView5: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                     
                 
@@ -37,6 +38,7 @@ struct SurveyView5: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                     .padding(.bottom, 100)
                 
@@ -67,7 +69,7 @@ struct SurveyView5: View {
                 }
                     .padding(.top, 250)
             }
-            .frame(width: 402, height: 869)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
             .navigationDestination(isPresented: $goBack){
                 SurveyView4()

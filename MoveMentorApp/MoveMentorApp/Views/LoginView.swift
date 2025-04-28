@@ -39,6 +39,7 @@ struct LoginView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                     .padding(.bottom, 10)
                     .textInputAutocapitalization(.never)
@@ -49,6 +50,8 @@ struct LoginView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
+
                     .padding(.horizontal, 25)
                     .padding(.bottom, 10)
                     .textInputAutocapitalization(.never)
@@ -138,7 +141,7 @@ struct LoginView: View {
                 
                 Spacer()
             }
-            .frame(width: 402, height: 869)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
         }
     }

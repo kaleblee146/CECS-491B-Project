@@ -65,7 +65,7 @@ struct OnboardingView: View {
                 .buttonStyle(BorderlessButtonStyle())
                 .padding()
             }
-            .padding(.top, 250)
+            .padding(.top, 150)
             
             /*
              .font(Font.custom("Roboto_Condensed-Black", size: 18))
@@ -78,7 +78,7 @@ struct OnboardingView: View {
              */
             
         }
-        .frame(width: 402, height: 869, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.navy)
         .navigationDestination(isPresented: $goBack){
             CreateAccountView()

@@ -15,20 +15,14 @@ struct CreateAccountView: View {
     @State private var username: String = ""
     @State private var email: String = ""
     @State private var phone: String = ""
-    @State private var dob: String = ""
+    @State private var dob = Date()
     @State private var password: String = ""
     
     // New fields
     @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var gender: String = ""
-    @State private var age: String = ""
-    @State private var units: String = ""
-    @State private var weight: String = ""
-    @State private var height: String = ""
-    @State private var goals: String = ""
-    @State private var bio: String = ""
-    @State private var role: String = "user"  // default value
+    
     
     @State private var statusMessage: String = ""
 
@@ -60,6 +54,7 @@ struct CreateAccountView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
@@ -69,6 +64,7 @@ struct CreateAccountView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
@@ -78,24 +74,28 @@ struct CreateAccountView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
-                        TextField("Date of Birth", text: $dob)
+                        DatePicker("Date of Birth", selection: $dob, displayedComponents: .date)
+                            .datePickerStyle(.compact)
                             .padding()
                             .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
+                            .foregroundColor(.white.opacity(0.5))
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
-                        
+    
                         SecureField("Password", text: $password)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                     }
@@ -108,6 +108,7 @@ struct CreateAccountView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
@@ -117,84 +118,22 @@ struct CreateAccountView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                             .disableAutocorrection(true)
+                            .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
-                        
-                        TextField("Gender", text: $gender)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .disableAutocorrection(true)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Age", text: $age)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .keyboardType(.numberPad)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Units (e.g., metric/imperial)", text: $units)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Weight", text: $weight)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .keyboardType(.decimalPad)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Height", text: $height)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .keyboardType(.decimalPad)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Goals", text: $goals)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Bio", text: $bio)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
-                        
-                        TextField("Role", text: $role)
-                            .padding()
-                            .background(Color.textBoxNavy)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .disableAutocorrection(true)
-                            .padding(.horizontal, 25)
-                            .padding(.bottom, 5)
+                       
+                          
                     }
                     
                     // Registration Button
                     Button("Continue") {
+                        /*
                         Task {
                             await registerUser()
                         }
+                         */
+                        gotoOnboard = true
+
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 350, height: 55)
@@ -203,6 +142,7 @@ struct CreateAccountView: View {
                     .cornerRadius(10)
                     .buttonStyle(BorderlessButtonStyle())
                     .padding(.bottom, 20)
+                    
                     
                     // Display Status/Error Message
                     Text(statusMessage)
@@ -228,7 +168,7 @@ struct CreateAccountView: View {
                     .foregroundColor(.black)
                     .cornerRadius(10)
                     .buttonStyle(BorderlessButtonStyle())
-                    .padding(.top, 10)
+                    .padding(.top, -35)
                     
                     Button(action: {}) {
                         HStack {
@@ -248,6 +188,12 @@ struct CreateAccountView: View {
                     .cornerRadius(10)
                     .buttonStyle(BorderlessButtonStyle())
                     .padding(.top, 10)
+                    
+                    Text("By clicking signing up, you agree to our Terms of Service and Privacy Policy.")
+                        .font(Font.custom("Roboto_Condensed-Black", size: 14))
+                        .foregroundColor(Color.white)
+                        .padding(.top, 10)
+                    
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -259,6 +205,7 @@ struct CreateAccountView: View {
         }
     }
     
+    /*
     // MARK: - Register User
     /// Attempts to register a new user with all the provided fields.
     func registerUser() async {
@@ -299,6 +246,7 @@ struct CreateAccountView: View {
             statusMessage = "Registration failed: \(error.localizedDescription)"
         }
     }
+     */
 }
 
 struct CreateAccountView_Preview: PreviewProvider {

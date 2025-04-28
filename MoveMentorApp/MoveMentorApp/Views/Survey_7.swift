@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AVFoundation
+import UIKit
 
 struct SurveyView7: View {
     @State private var goBack = false
@@ -50,6 +52,7 @@ struct SurveyView7: View {
 
                     
                     Button("CONTINUE"){
+                        checkCameraAccess()
                         continueButton = true
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
@@ -63,7 +66,7 @@ struct SurveyView7: View {
                 .padding(.top, 250)
                     
             }
-            .frame(width: 402, height: 869)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
             .navigationDestination(isPresented: $goBack){
                 SurveyView6()
@@ -72,6 +75,25 @@ struct SurveyView7: View {
                 CallibrationView()
             }
         }
+    }
+}
+
+func checkCameraAccess(){
+    switch AVCaptureDevice.authorizationStatus(for: .video){
+    case .authorized:
+        print("Camera access already granted.")
+    case .notDetermined:
+        AVCaptureDevice.requestAccess(for: .video){ granted in
+            if granted{
+                print("Camera access granted.")
+            } else {
+                print("Camera access denied.")
+            }
+        }
+    case .denied, .restricted:
+        print("Camera access previously denied or restricted.")
+    @unknown default:
+        print("Unknown camera authorization status.")
     }
 }
 

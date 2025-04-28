@@ -34,7 +34,7 @@ class NetworkManager {
     ) async throws -> [String: Any] {
         
         // 1) Construct URL
-        guard let url = URL(string: "http://52.53.157.43:8000/api/register/") else {
+        guard let url = URL(string: "https://www.movementor.app/register/") else {
             throw NetworkError.invalidURL
         }
         
@@ -88,7 +88,7 @@ class NetworkManager {
     func loginUser(username: String, password: String) async throws -> [String: Any] {
         //guard let url = URL(string: "http://127.0.0.1:8000/api/users/api/login/") else {
         //guard let url = URL(string: "http://localhost:8000/api/users/api/login/") else {
-        guard let url = URL(string: "http://52.53.157.43:8000/api/login/") else {
+        guard let url = URL(string: "https://www.movementor.app/login/") else {
             throw NetworkError.invalidURL
         }
         
