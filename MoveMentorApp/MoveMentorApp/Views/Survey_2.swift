@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SurveyView2: View {
+    @EnvironmentObject var registrationData: RegistrationData
+
     @State private var selectedAge = 0
     
     @State private var goBack = false
@@ -44,6 +46,7 @@ struct SurveyView2: View {
 
                     
                     Button("CONTINUE"){
+                        registrationData.age = selectedAge
                         continueButton = true
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))

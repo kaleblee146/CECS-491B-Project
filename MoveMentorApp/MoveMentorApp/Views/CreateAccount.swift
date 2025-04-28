@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CreateAccountView: View {
+    @EnvironmentObject var registrationData: RegistrationData
+
     @State private var gotoOnboard = false
     @Environment(\.dismiss) var dismiss
 
@@ -48,7 +50,7 @@ struct CreateAccountView: View {
                     
                     // User Info Fields
                     Group {
-                        TextField("Username", text: $username)
+                        TextField("Username", text: $registrationData.username)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
@@ -58,7 +60,7 @@ struct CreateAccountView: View {
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
-                        TextField("Email", text: $email)
+                        TextField("Email", text: $registrationData.email)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
@@ -68,7 +70,7 @@ struct CreateAccountView: View {
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
-                        TextField("Phone", text: $phone)
+                        TextField("Phone", text: $registrationData.phone)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
@@ -78,7 +80,7 @@ struct CreateAccountView: View {
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
-                        DatePicker("Date of Birth", selection: $dob, displayedComponents: .date)
+                        DatePicker("Date of Birth", selection: $registrationData.dob, displayedComponents: .date)
                             .datePickerStyle(.compact)
                             .padding()
                             .background(Color.textBoxNavy)
@@ -89,7 +91,7 @@ struct CreateAccountView: View {
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
     
-                        SecureField("Password", text: $password)
+                        SecureField("Password", text: $registrationData.password)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
@@ -102,7 +104,7 @@ struct CreateAccountView: View {
                     
                     // New Registration Fields
                     Group {
-                        TextField("First Name", text: $firstName)
+                        TextField("First Name", text: $registrationData.firstName)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
@@ -112,7 +114,7 @@ struct CreateAccountView: View {
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
                         
-                        TextField("Last Name", text: $lastName)
+                        TextField("Last Name", text: $registrationData.lastName)
                             .padding()
                             .background(Color.textBoxNavy)
                             .foregroundColor(.white)
@@ -200,6 +202,7 @@ struct CreateAccountView: View {
             .background(Color.navy)
             .navigationDestination(isPresented: $gotoOnboard) {
                 OnboardingView()
+                    .environmentObject(registrationData)
             }
             .padding(.top, -50)
         }

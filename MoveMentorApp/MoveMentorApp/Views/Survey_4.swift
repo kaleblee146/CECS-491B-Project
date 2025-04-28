@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SurveyView4: View {
+    @EnvironmentObject var registrationData: RegistrationData
+
     @State private var setWeight: String = ""
     
     @State private var goBack = false
@@ -46,7 +48,10 @@ struct SurveyView4: View {
 
                     
                     Button("CONTINUE"){
-                        continueButton = true
+                        if let weightDouble = Double(setWeight) {
+                            registrationData.weight = weightDouble
+                            continueButton = true
+                        }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)

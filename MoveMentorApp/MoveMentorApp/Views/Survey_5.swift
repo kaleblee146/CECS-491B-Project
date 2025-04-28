@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct SurveyView5: View {
+    @EnvironmentObject var registrationData: RegistrationData
+
     @State private var heightFeet: String = ""
-    @State private var HeightInches: String = ""
+    @State private var heightInches: String = ""
     
     @State private var goBack = false
     @State private var continueButton = false
@@ -32,7 +34,7 @@ struct SurveyView5: View {
                     .padding(.horizontal, 25)
                     
                 
-                TextField("in", text: $HeightInches)
+                TextField("in", text: $heightInches)
                     .padding()
                     .background(Color.textBoxNavy)
                     .foregroundColor(.white)
@@ -57,7 +59,14 @@ struct SurveyView5: View {
 
                     
                     Button("CONTINUE"){
-                        continueButton = true
+                        if let feet = Double(heightFeet),
+                           let inches = Double(heightInches) {
+                            
+                            let totalHeightInInches = feet * 12 + inches
+                            registrationData.height = totalHeightInInches //
+                            
+                            continueButton = true
+                        }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)

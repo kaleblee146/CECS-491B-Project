@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct SurveyView1: View {
+    @EnvironmentObject var registrationData: RegistrationData
+
     @State private var goBack = false
     @State private var continueButton = false
     @State private var selectedImage: Int? = nil
-    
+    @State private var tempGender: String = ""
+
     
     var body: some View{
         NavigationStack{
@@ -31,11 +34,13 @@ struct SurveyView1: View {
                         .brightness(selectedImage == 1 ? 0 : -0.3)
                         .onTapGesture{
                             selectedImage = (selectedImage == 1) ? nil : 1
+                            tempGender = "Male"
                         }
                     Image("Female")
                         .brightness(selectedImage == 2 ? 0 : -0.3)
                         .onTapGesture{
                             selectedImage = (selectedImage == 2) ? nil : 2
+                            tempGender = "Female"
                         }
                 }
                 HStack{
@@ -53,6 +58,7 @@ struct SurveyView1: View {
 
                     
                     Button("CONTINUE"){
+                        registrationData.gender = tempGender
                         continueButton = true
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))

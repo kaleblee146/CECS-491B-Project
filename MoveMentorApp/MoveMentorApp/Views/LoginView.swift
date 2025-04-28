@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct LoginView: View {
+    
+    @EnvironmentObject var session: UserSession
+
     @State private var signUp = false
     @State private var correctPass = false
     @State private var forgotPass = false
@@ -155,6 +158,17 @@ struct LoginView: View {
             // Example: Check if the response includes an access token.
             if let accessToken = response["access"] as? String {
                 loginMessage = "Login Successful!"
+                
+                session.username = response["username"] as? String ?? ""
+                session.firstName = response["firstName"] as? String ?? ""
+                session.lastName = response["lastName"] as? String ?? ""
+                session.email = response["email"] as? String ?? ""
+                session.age = response["age"] as? Int ?? 0
+                session.height = response["height"] as? Double ?? 0.0
+                session.weight = response["weight"] as? Double ?? 0.0
+                session.role = response["role"] as? String ?? ""
+                session.joinedYear = Calendar.current.component(.year, from: ISO8601DateFormatter().date(from: response["date_joined"] as? String ?? "") ?? Date())
+
                 correctPass = true
                 // Optionally, store the access token securely (e.g., in Keychain)
             } else {

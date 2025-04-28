@@ -34,7 +34,9 @@ class NetworkManager {
     ) async throws -> [String: Any] {
         
         // 1) Construct URL
-        guard let url = URL(string: "https://www.movementor.app/register/") else {
+       // guard let url = URL(string: "https://www.movementor.app/register/") else {
+        
+        guard let url = URL(string: "http://192.168.1.123:8000/api/register/") else {
             throw NetworkError.invalidURL
         }
         
@@ -82,13 +84,35 @@ class NetworkManager {
         
         return jsonDict
     }
+    
+    func registerUser(from data: RegistrationData) async throws -> [String: Any] {
+            try await registerUser(
+                username: data.username,
+                password: data.password,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                dob: DateFormatter.shortDateFormatter.string(from: data.dob),
+                email: data.email,
+                phone: data.phone,
+                gender: data.gender,
+                age: data.age,
+                units: data.units,
+                weight: data.weight,
+                height: data.height,
+                goals: data.goals,
+                bio: data.bio,
+                role: data.role
+            )
+        }
+    
 
     // MARK: - Login User
     /// Logs in an existing user with username/password.
     func loginUser(username: String, password: String) async throws -> [String: Any] {
-        //guard let url = URL(string: "http://127.0.0.1:8000/api/users/api/login/") else {
+        guard let url = URL(string: "http://192.168.1.123:8000/api/users/login/"
+) else {
         //guard let url = URL(string: "http://localhost:8000/api/users/api/login/") else {
-        guard let url = URL(string: "https://www.movementor.app/login/") else {
+        //guard let url = URL(string: "https://www.movementor.app/login/") else {
             throw NetworkError.invalidURL
         }
         
@@ -116,4 +140,46 @@ class NetworkManager {
         
         return jsonDict
     }
+}
+
+class RegistrationData: ObservableObject {
+    @Published var username: String = ""
+    @Published var password: String = ""
+    @Published var firstName: String = ""
+    @Published var lastName: String = ""
+    @Published var dob: Date = Date()
+    @Published var email: String = ""
+    @Published var phone: String = ""
+    @Published var gender: String = ""
+    @Published var age: Int = 0
+    @Published var units: String = ""
+    @Published var weight: Double = 0.0
+    @Published var height: Double = 0.0
+    @Published var goals: String = ""
+    @Published var bio: String = ""
+    @Published var role: String = "Free" // Default role maybe
+}
+
+class UserSession: ObservableObject {
+    @Published var username: String = ""
+    @Published var firstName: String = ""
+    @Published var lastName: String = ""
+    @Published var email: String = ""
+    @Published var phone: String = ""
+    @Published var role: String = ""
+    @Published var height: Double = 0.0
+    @Published var weight: Double = 0.0
+    @Published var age: Int = 0
+    @Published var joinedYear: Int = Calendar.current.component(.year, from: Date())
+    @Published var isAuthenticated: Bool = false
+}
+
+extension DateFormatter {
+    static let shortDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd" // 2025-04-27 style
+        formatter.timeZone = TimeZone(secondsFromGMT: 0) // UTC
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
 }

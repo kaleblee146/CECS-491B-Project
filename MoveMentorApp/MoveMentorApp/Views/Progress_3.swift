@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct Progress_3_View: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToAnalytics = false
     @State private var goToCalendar = false
 
@@ -14,12 +16,11 @@ struct Progress_3_View: View {
                             .frame(width: 138, height: 138)
                             .padding(.top, 40)
 
-                        // Name and Member Info
-                        Text("Jhon Smith")
+                        Text("\(session.firstName) \(session.lastName)")
                             .foregroundColor(.white)
 
-                        Text("Member since 2020")
-                            .foregroundColor(.gray)
+                        Text("Member since \(session.joinedYear)")      .foregroundColor(.white)
+
 
                         // Height / Weight / Age
                         RoundedRectangle(cornerRadius: 20)
@@ -28,19 +29,19 @@ struct Progress_3_View: View {
                             .overlay(
                                 HStack {
                                     VStack {
-                                        Text("5'10")
+                                        Text("\(session.height, specifier: "%.1f")")
                                         Text("Height")
                                     }
                                     .padding(20)
 
                                     VStack {
-                                        Text("24")
+                                        Text("\(session.age)")
                                         Text("Years old")
                                     }
                                     .padding(20)
 
                                     VStack {
-                                        Text("200 lbs")
+                                        Text("\(session.weight, specifier: "%.1f")")
                                         Text("Weight")
                                     }
                                     .padding(20)
@@ -82,11 +83,11 @@ struct Progress_3_View: View {
                                 .padding(.top, 10)
                         }
                     }
-                    .frame(maxWidth: .infinity) // ✅ Stretch the ScrollView content full width
+                    .frame(maxWidth: .infinity)
                 }
                 .background(Color.navy)
 
-                // Sticky Bottom NavBar
+                
                 ProfileNavBarView()
                     .padding(.bottom, 5)
             }
@@ -94,9 +95,11 @@ struct Progress_3_View: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationDestination(isPresented: $goToAnalytics) {
                 Progress_1_View()
+                    .environmentObject(session)
             }
             .navigationDestination(isPresented: $goToCalendar) {
                 Progress_2_View()
+                    .environmentObject(session)
             }
         }
     }

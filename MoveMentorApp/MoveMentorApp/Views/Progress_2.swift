@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct Progress_2_View: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToAnalytics = false
     @State private var goToStats = false
 
@@ -14,11 +16,10 @@ struct Progress_2_View: View {
                             .frame(width: 138, height: 138)
                             .padding(.top, 40)
 
-                        Text("Jhon Smith")
+                        Text("\(session.firstName) \(session.lastName)")
                             .foregroundColor(.white)
 
-                        Text("Member since 2020")
-                            .foregroundColor(.gray)
+                        Text("Member since \(session.joinedYear)")      .foregroundColor(.white)
 
                         // Height, Age, Weight box
                         RoundedRectangle(cornerRadius: 20)
@@ -27,19 +28,19 @@ struct Progress_2_View: View {
                             .overlay(
                                 HStack {
                                     VStack {
-                                        Text("5'10")
+                                        Text("\(session.height, specifier: "%.1f")")
                                         Text("Height")
                                     }
                                     .padding(20)
 
                                     VStack {
-                                        Text("24")
+                                        Text("\(session.age)")
                                         Text("Years old")
                                     }
                                     .padding(20)
 
                                     VStack {
-                                        Text("200 lbs")
+                                        Text("\(session.weight, specifier: "%.1f")")
                                         Text("Weight")
                                     }
                                     .padding(20)
@@ -95,9 +96,11 @@ struct Progress_2_View: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationDestination(isPresented: $goToAnalytics) {
                 Progress_1_View()
+                    .environmentObject(session)
             }
             .navigationDestination(isPresented: $goToStats) {
                 Progress_3_View()
+                    .environmentObject(session)
             }
         }
     }

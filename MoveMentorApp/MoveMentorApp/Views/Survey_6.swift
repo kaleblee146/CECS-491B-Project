@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct SurveyView6: View {
+    @EnvironmentObject var registrationData: RegistrationData
+    @EnvironmentObject var session: UserSession
+    
     @State private var goBack = false
     @State private var continueButton = false
     
@@ -80,8 +83,34 @@ struct SurveyView6: View {
                     
 
                     
-                    Button("CONTINUE"){
-                        continueButton = true
+                    Button("REGISTER"){
+                        registrationData.goals = [goal1, goal2, goal3, goal4, goal5]
+                                .filter { !$0.isEmpty }
+                                .joined(separator: ", ")
+
+                        Task {
+                            do {
+                                let response = try await NetworkManager.shared.registerUser(from: registrationData)
+                                print("✅ Successfully registered: \(response)")
+                                
+                                session.username = response["username"] as? String ?? ""
+                                session.firstName = response["firstName"] as? String ?? ""
+                                session.lastName = response["lastName"] as? String ?? ""
+                                session.email = response["email"] as? String ?? ""
+                                session.phone = response["phone"] as? String ?? ""
+                                session.role = response["role"] as? String ?? ""
+                                session.age = response["age"] as? Int ?? 0
+                                session.height = response["height"] as? Double ?? 0.0
+                                session.weight = response["weight"] as? Double ?? 0.0
+                                session.joinedYear = Calendar.current.component(.year, from: ISO8601DateFormatter().date(from: response["date_joined"] as? String ?? "") ?? Date())
+                                session.isAuthenticated = true
+
+
+                                continueButton = true
+                            } catch {
+                                print("❌ Registration failed:", error)
+                            }
+                        }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)
