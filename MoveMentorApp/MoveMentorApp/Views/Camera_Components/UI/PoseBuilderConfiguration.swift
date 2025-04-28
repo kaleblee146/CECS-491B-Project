@@ -2,11 +2,11 @@ import Foundation
 
 struct PoseBuilderConfiguration {
     var algorithm: Algorithm = .single
-    var jointConfidenceThreshold: Float = 0.5
-    var poseConfidenceThreshold: Float = 0.5
+    var jointConfidenceThreshold: Double = 0.5
+    var poseConfidenceThreshold: Double = 0.5
     
     // These are important for multiple-person pose estimation (calibration tuning)
-    var localSearchRadius: Float = 3.0
+    var localSearchRadius: Int = 3
     var matchingJointDistance:  Float = 15.0
     var adjacentJointOffsetRefinementSteps: Int = 5
 }
