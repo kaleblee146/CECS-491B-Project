@@ -6,6 +6,33 @@
 //
 
 import SwiftUI
+import AVFoundation
+import UIKit
+
+struct CameraViewSetPreview: UIViewRepresentable {
+    private let session = AVCaptureSession()
+    
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
+              let input = try? AVCaptureDeviceInput(device: device) else {
+            return view
+        }
+        
+        session.addInput(input)
+        
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.frame = UIScreen.main.bounds
+        view.layer.addSublayer(previewLayer)
+        
+        session.startRunning()
+        
+        return view
+    }
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
 
 struct CallibrationView: View {
     @State private var goToHome = false
@@ -26,8 +53,10 @@ struct CallibrationView: View {
 
                     )
                 HStack{
-                    RoundedRectangle(cornerRadius: 25)
+                    CameraView()
                         .frame(width: 258, height: 461)
+                        .cornerRadius(25)
+                        .clipped()
                     
                     VStack{
                         Button(action: {}){
@@ -126,15 +155,16 @@ struct CallibrationView: View {
             .buttonStyle(BorderlessButtonStyle())
             .padding()
         }
-        .frame(width: 402, height: 869)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.navy)
         .navigationDestination(isPresented: $goToHome){
-            Progress_1_View()
+            HomeScreen()
         }
         
     }
         
 }
+
 
 
 struct CallibrationView_Previews : PreviewProvider {

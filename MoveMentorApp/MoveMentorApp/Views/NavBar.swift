@@ -1,34 +1,244 @@
-//
-//  NavBar.swift
-//  MoveMentorDraft
-//
-//  Created by Kaleb Lee on 3/16/25.
-//
-
 import SwiftUI
 
-struct NavBarView: View {
-    var body: some View{
-        NavigationStack{
-            HStack{
-                Image("home")
-                    .padding(20)
-                Image("workout")
-                    .padding(20)
-                Image("profile")
-                    .padding(20)
-                Image("search")
-                    .padding(20)
-                Image("gear")
-                    .padding(20)
+struct HomeNavBarView: View {
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+    
+    @State private var selectedTab: BottomTab = .home
+    
+    var body: some View {
+        NavigationStack {
+            HStack {
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
+                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
+                
+                HStack {
+                    Spacer()
+                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
+                        selectedTab = .home
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
+                        selectedTab = .workout
+                        goToWorkout = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
+                        selectedTab = .profile
+                        goToProfile = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
+                        selectedTab = .explore
+                        goToExplore = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
+                        selectedTab = .settings
+                        goToSettings = true
+                    }
+                    Spacer()
+                }
             }
-            .frame(width: 375, height: 70)
         }
     }
 }
 
-struct NavBar_Previews : PreviewProvider {
-    static var previews: some View {
-        NavBarView()
+
+
+struct WorkoutNavBarView: View {
+    @State private var goToHome = false
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+    
+    @State private var selectedTab: BottomTab = .workout
+    
+    var body: some View {
+        NavigationStack {
+            HStack {
+                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
+                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
+                
+                HStack {
+                    Spacer()
+                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
+                        selectedTab = .home
+                        goToHome = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
+                        selectedTab = .workout
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
+                        selectedTab = .profile
+                        goToProfile = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
+                        selectedTab = .explore
+                        goToExplore = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
+                        selectedTab = .settings
+                        goToSettings = true
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
+struct ProfileNavBarView: View {
+    @State private var goToWorkout = false
+    @State private var goToHome = false
+    @State private var goToExplore = false
+    @State private var goToSettings = false
+    
+    @State private var selectedTab: BottomTab = .profile
+    
+    var body: some View {
+        NavigationStack {
+            HStack {
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
+                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
+                
+                HStack {
+                    Spacer()
+                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
+                        selectedTab = .home
+                        goToHome = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
+                        selectedTab = .workout
+                        goToWorkout = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
+                        selectedTab = .profile
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
+                        selectedTab = .explore
+                        goToExplore = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
+                        selectedTab = .settings
+                        goToSettings = true
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
+struct ExploreNavBarView: View {
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToSettings = false
+    @State private var goToHome = false
+    
+    @State private var selectedTab: BottomTab = .explore
+    
+    var body: some View {
+        NavigationStack {
+            HStack {
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
+                
+                HStack {
+                    Spacer()
+                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
+                        selectedTab = .home
+                        goToHome = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
+                        selectedTab = .workout
+                        goToWorkout = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
+                        selectedTab = .profile
+                        goToProfile = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
+                        selectedTab = .explore
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
+                        selectedTab = .settings
+                        goToSettings = true
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
+struct SettingsNavBarView: View {
+    @State private var goToWorkout = false
+    @State private var goToProfile = false
+    @State private var goToExplore = false
+    @State private var goToHome = false
+    
+    @State private var selectedTab: BottomTab = .settings
+    
+    var body: some View {
+        NavigationStack {
+            HStack {
+                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                
+                HStack {
+                    Spacer()
+                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
+                        selectedTab = .home
+                        goToHome = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
+                        selectedTab = .workout
+                        goToWorkout = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
+                        selectedTab = .profile
+                        goToProfile = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
+                        selectedTab = .explore
+                        goToExplore = true
+                    }
+                    Spacer()
+                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
+                        selectedTab = .settings
+                    }
+                    Spacer()
+                }
+            }
+        }
     }
 }

@@ -63,9 +63,9 @@ struct SurveyView1: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 250)
+                .padding(.top, 275)
             }
-            .frame(width: 402, height: 869)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
             .navigationDestination(isPresented: $goBack){
                 OnboardingView()

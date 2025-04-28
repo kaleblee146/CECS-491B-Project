@@ -8,11 +8,11 @@
 import SwiftUI
 
 @main
-struct MoveMentorAppApp: App {
+struct MoveMentorApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeScreen()
-            //ContentView()
+            //HomeScreen()
+            ContentView()
         }
     }
 }

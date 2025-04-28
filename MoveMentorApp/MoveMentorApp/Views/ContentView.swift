@@ -1,50 +1,35 @@
-//
-//  ContentView.swift
-//  MoveMentorApp
-//
-//  Created by Chase Sansom on 4/6/25.
-//
-
-//
-//  ContentView.swift
-//  MoveMentorDraft
-//
-//  Created by Kaleb Lee on 2/4/25.
-//
-
 import SwiftUI
 
-
 struct ContentView: View {
-    /*
-     Variables for Navigation
-     */
     @State private var goToLogin = false
     @State private var goToSignUp = false
-    
+
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             ZStack {
+                // Background Welcome Image
                 Image("Welcome")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-    
+                
                 VStack {
-                    Image("moveMentor")
+                    Image("MoveMentor")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 150, height: 150) // optional sizing
                     
                     Text("MoveMentor")
                         .font(Font.custom("Roboto_Condensed-Black", size: 40))
                         .padding(.top, 30)
                     
-                    Text("Sculp Your Body")
+                    Text("Sculpt Your Body") 
                         .font(Font.custom("Roboto_Condensed-Black", size: 27))
                         .padding(.top, 50)
                     
                     Button("Login") {
                         goToLogin = true
                     }
-                    
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 350, height: 50)
                     .background(Color.magenta)
@@ -53,10 +38,9 @@ struct ContentView: View {
                     .padding(.top, 75)
                     .buttonStyle(BorderlessButtonStyle())
                     
-                    
-                    HStack{
+                    HStack {
                         Text("Don't have an account?")
-                        Button("Sign up"){
+                        Button("Sign up") {
                             goToSignUp = true
                         }
                         .buttonStyle(BorderlessButtonStyle())
@@ -64,18 +48,14 @@ struct ContentView: View {
                     }
                     .padding(.top, 50)
                 }
-                
+                .padding()
             }
-            .padding()
-            .frame(width: 402, height: 869)
             .navigationDestination(isPresented: $goToLogin) {
                 LoginView()
             }
-            .navigationDestination(isPresented: $goToSignUp){
+            .navigationDestination(isPresented: $goToSignUp) {
                 CreateAccountView()
             }
-            
-            
         }
     }
 }

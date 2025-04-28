@@ -69,7 +69,7 @@ struct SurveyView3: View {
                 .padding(.top, 250)
                 
             }
-            .frame(width: 402, height: 869)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
             .navigationDestination(isPresented: $goBack){
                 SurveyView2()

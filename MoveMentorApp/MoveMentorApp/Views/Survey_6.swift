@@ -31,6 +31,7 @@ struct SurveyView6: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                 TextField("2. ", text: $goal2)
                     .padding()
@@ -38,6 +39,7 @@ struct SurveyView6: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                 TextField("3. ", text: $goal3)
                     .padding()
@@ -45,6 +47,7 @@ struct SurveyView6: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                 TextField("4. ", text: $goal4)
                     .padding()
@@ -52,6 +55,7 @@ struct SurveyView6: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                 TextField("5. ", text: $goal5)
                     .padding()
@@ -59,6 +63,7 @@ struct SurveyView6: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .disableAutocorrection(true)
+                    .colorScheme(.dark)
                     .padding(.horizontal, 25)
                 
                 HStack{
@@ -89,7 +94,7 @@ struct SurveyView6: View {
                 .padding(.top, 250)
                 
             }
-            .frame(width: 402, height: 869)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
             .navigationDestination(isPresented: $goBack){
                 SurveyView5()

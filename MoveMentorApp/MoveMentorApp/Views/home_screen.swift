@@ -141,43 +141,7 @@ struct HomeScreen: View {
                 .padding(.top, 16)
                 // Navigation destinations trigger
                 //MARK: Navigation Links
-
-                NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
-                
-                
-                /*
-                NavigationLink(destination: Progress_1_View(selectedTab: $selectedTab), isActive: $goToProfile) { EmptyView() }.hidden()
-                
-                
-                NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
-                NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
-                */
-
-                // Bottom Navigation
-                HStack {
-                    Spacer()
-                    BottomIcon(iconName: "house.fill", isSelected: selectedTab == .home) {
-                        selectedTab = .home
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "dumbbell.fill", isSelected: selectedTab == .workout) {
-                        selectedTab = .workout
-                        goToWorkout = true
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "person.fill", isSelected: selectedTab == .profile) {
-                        selectedTab = .profile
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "magnifyingglass", isSelected: selectedTab == .explore) {
-                        selectedTab = .explore
-                    }
-                    Spacer()
-                    BottomIcon(iconName: "gearshape.fill", isSelected: selectedTab == .settings) {
-                        selectedTab = .settings
-                    }
-                    Spacer()
-                }
+                HomeNavBarView()
                 .padding()
                 .background(Color(hex: "2A2E43").opacity(0.8))// Background color of bottom nav
                 .clipShape(Capsule())
@@ -323,18 +287,7 @@ struct WorkoutDetailPage: View {
     }
 }
 
-//Color wheel
-extension Color {
-    init(hex: String) {
-        let hex = hex.replacingOccurrences(of: "#", with: "")
-        var int = UInt64()
-        Scanner(string: hex).scanHexInt64(&int)
-        let red = Double((int >> 16) & 0xFF) / 255.0
-        let green = Double((int >> 8) & 0xFF) / 255.0
-        let blue = Double(int & 0xFF) / 255.0
-        self.init(red: red, green: green, blue: blue)
-    }
-}
+
 //Preview
 struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
