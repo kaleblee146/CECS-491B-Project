@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import SwiftUI
 
 class ViewController: UIViewController {
 
@@ -19,6 +20,8 @@ class ViewController: UIViewController {
     let videoCapture = VideoCapture()
     var lastFrame: CGImage?
 
+    var settingsButton: UIButton!
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -26,13 +29,15 @@ class ViewController: UIViewController {
 
         do {
             poseNet = try PoseNet()
-            poseNet.delegate = self  // ✅ Set delegate
+            poseNet.delegate = self
         } catch {
             print("❌ Failed to load PoseNet: \(error)")
             return
         }
 
         setupPoseImageView()
+        setupGradientOverlay()
+        setupSettingsButton()
         setupCamera()
     }
 
@@ -51,9 +56,48 @@ class ViewController: UIViewController {
         ])
     }
 
+    private func setupGradientOverlay() {
+        let gradientOverlay = GradientOverlayView(frame: self.view.bounds)
+        gradientOverlay.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(gradientOverlay)
+
+        NSLayoutConstraint.activate([
+            gradientOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+            gradientOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            gradientOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            gradientOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+
+    private func setupSettingsButton() {
+        settingsButton = UIButton(type: .custom)
+        settingsButton.translatesAutoresizingMaskIntoConstraints = false
+        settingsButton.setImage(UIImage(systemName: "gearshape.fill"), for: .normal)
+        settingsButton.tintColor = .white
+        settingsButton.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        settingsButton.layer.cornerRadius = 25
+        settingsButton.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
+
+        view.addSubview(settingsButton)
+
+        NSLayoutConstraint.activate([
+            settingsButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            settingsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            settingsButton.widthAnchor.constraint(equalToConstant: 50),
+            settingsButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
+    @objc private func openSettings() {
+    let hostingController = UIHostingController(rootView: CameraSettingsView())
+    hostingController.modalPresentationStyle = .overFullScreen
+    self.present(hostingController, animated: true, completion: nil)
+    }
+
+
     private func setupCamera() {
         videoCapture.delegate = self
-        videoCapture.setUp(sessionPreset: .high) { success in  // ✅ Add completion block
+        videoCapture.setUp(sessionPreset: .high) { success in
             if success {
                 self.videoCapture.start()
             } else {
@@ -76,8 +120,6 @@ extension ViewController: VideoCaptureDelegate {
         poseNet.predict(cgImage)
     }
 }
-
-
 
 // MARK: - PoseNetDelegate
 
