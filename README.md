@@ -1,22 +1,26 @@
 # MoveMentor Project
 
-MoveMentor is an AI-powered form tracking app that provides users with real-time feedback on their movements and delivers customized, AI-generated workout plans tailored to individual goals.
+MoveMentor is an AI-powered form-tracking app that provides real-time feedback on your movements and delivers customized, AI-generated workout plans tailored to your goals.
 
 ## Table of Contents
 
-1. [Directory Structure](#directory-structure)
-2. [Prerequisites](#prerequisites)
-3. [AWS EC2 Server Setup](#aws-ec2-server-setup)
-4. [Component Overviews](#component-overviews)
-5. [Contributing](#contributing)
-6. [License](#license)
-6. [Contributing](#contributing)
-7. [License](#license)
+- [MoveMentor Project](#movementor-project)
+  - [Table of Contents](#table-of-contents)
+  - [Directory Structure](#directory-structure)
+  - [Prerequisites](#prerequisites)
+  - [Local Development](#local-development)
+  - [Containerization \& AWS Deployment](#containerization--aws-deployment)
+  - [Component Overviews](#component-overviews)
+    - [AWS RDS](#aws-rds)
+    - [Camera](#camera)
+    - [DjangoBackend](#djangobackend)
+    - [MoveMentorApp](#movementorapp)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Directory Structure
 
 ```bash
-(env) chasesansom@Chases-MacBook-Pro-2 MoveMentor Project % tree -L 3
 .
 ├── AWS RDS
 │   ├── MoveMentor.pem
@@ -31,19 +35,15 @@ MoveMentor is an AI-powered form tracking app that provides users with real-time
 │   │   ├── Pose
 │   │   ├── UI
 │   │   └── Utils
-│   ├── PoseFinder.xcodeproj
-│   │   ├── project.pbxproj
-│   │   ├── project.xcworkspace
-│   │   └── xcshareddata
-│   └── readme.rd
+│   └── PoseFinder.xcodeproj
 ├── DjangoBackend
-│   ├── analytics
-│   ├── backend
-│   ├── core
+│   ├── Dockerfile
+│   ├── requirements.txt
 │   ├── manage.py
+│   ├── analytics
+│   ├── core
 │   ├── notifications
 │   ├── plans
-│   ├── requirements.txt
 │   ├── resources
 │   ├── users
 │   └── workouts
@@ -52,117 +52,96 @@ MoveMentor is an AI-powered form tracking app that provides users with real-time
 │   ├── MoveMentorApp.xcodeproj
 │   ├── MoveMentorAppTests
 │   └── MoveMentorAppUITests
+├── docker-compose.yml
+├── Dockerrun.aws.json
 ├── README.md
-├── env
-│   ├── bin
-│   ├── etc
-│   ├── include
-│   ├── lib
-│   ├── pyvenv.cfg
-│   └── share
-└── moveMentorPhoneTest
-    ├── moveMentorPhoneTest
-    ├── moveMentorPhoneTest.xcodeproj
-    ├── moveMentorPhoneTestTests
-    └── moveMentorPhoneTestUITests
+└── env
+    └── … (virtualenv files)
 ```
+
+> **Note:** The old `moveMentorPhoneTest` directory has been removed. **MoveMentorApp** is now the sole iOS front-end.
 
 ## Prerequisites
 
-- **macOS** (required for Xcode projects)
-- **Xcode 13+** (for building iOS front-end)
-- **Python 3.8+** (for backend and camera app)
-- **pip** (Python package installer)
-- **AWS CLI** (for provisioning RDS)
-- **Virtualenv** (recommended)
+- **macOS** (for building/running the iOS front-end)  
+- **Xcode 13+**  
+- **Python 3.8+**  
+- **pip**  
+- **Docker & Docker Compose**  
+- **AWS CLI** & **EB CLI**  
 
-## AWS EC2 Server Setup
+## Local Development
 
-1. SSH into AWS RDS EC2 server
-    
-    ```bash
-    ssh -i "AWS RDS"/movementordb.pem ec2-user@52.53.157.43
-    ```
-    
-2. New server? (Otherwise skip)
-    
-    ```bash
-    sudo yum update -y
-    sudo yum install python3 pip git -y
-    pip3 install virtualenv
-    ```
-    
-3. Clone GitHub repository
-    
-    ```bash
-    git clone https://github.com/kaleblee146/CECS-491B-Project.git
-    ```
-    
-4. Authenticate with GitHub if necessary to clone the repository
+1. **Backend**  
+   ```bash
+   cd DjangoBackend
+   docker-compose build
+   docker-compose up -d
+   ```
+   - The Django API will be available at `http://localhost:8000`.
 
-5. Setup and activate virtual environment
-    
-    ```bash
-    python3 -m venv env
-    source env/bin/activate
-    ```
-    
-6. Install dependencies
-    
-    ```bash
-    pip install -r requirements.txt
-    ```
-    
-7. Make and apply migrations
-    
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
-    
-8. Run the server
-    
-    ```bash
-    python manage.py runserver 0.0.0.0:8000
-    ```
-    
-9. Access the application
-    
-    http://52.53.157.43:8000
+2. **iOS Front-end**  
+   - Open `MoveMentorApp/MoveMentorApp.xcodeproj` in Xcode.  
+   - In `AppConfig.swift`, set the API base URL to `http://host.docker.internal:8000`.  
+   - Run on the iOS Simulator.
+
+## Containerization & AWS Deployment
+
+1. **Login & initialize EB**  
+   ```bash
+   eb init MoveMentor \
+     --platform docker \
+     --region us-west-1
+   ```
+
+2. **Create your environment** (only once)  
+   ```bash
+   eb create movementor-prod
+   ```
+
+3. **Deploy**  
+   ```bash
+   eb deploy
+   ```
+
+4. **View logs** & health  
+   ```bash
+   eb logs
+   eb health
+   ```
+
+> **Tip:** Store your DB credentials in EB environment variables or use AWS Parameter Store, not in plain text.
 
 ## Component Overviews
 
-### AWS RDS
+### AWS RDS  
+- Manages our PostgreSQL database.  
+- **Security:** Credentials injected via environment variables; rotate keys regularly.
 
-Contains keys, scripts, and configuration for provisioning and managing the PostgreSQL database in AWS RDS. Ensure you secure access and rotate credentials regularly.
+### Camera  
+- Swift-based module for capturing video and streaming to the backend for pose analysis.
 
-### Camera
+### DjangoBackend  
+- **Frameworks:** Django + DRF  
+- **Responsibilities:**  
+  - User auth  
+  - Movement analytics CRUD  
+  - REST endpoints for front-end & camera  
+  - Admin interface  
 
-A Swift-based camera tracking application that captures and streams video for real-time movement analysis, with data processing handled in Python on the backend.
+### MoveMentorApp  
+- Swift iOS app:  
+  - Login & user profile  
+  - Workout plan views  
+  - Real-time feedback UI  
 
-### DjangoBackend
+## Contributing
 
-The RESTful API built with Django and Django REST Framework. Responsible for:
-
-- User authentication and authorization
-- Storing and retrieving movement analytics
-- Exposing endpoints for mobile and camera clients
-- Admin interface for data inspection
-
-### MoveMentorApp
-
-An early draft of the iOS front-end, written in Swift and developed in Xcode. Features include:
-
-- User login and profile management
-- Basic navigation structure
-
-> **Note:** This draft is experimental and may be unstable.
-
-### moveMentorPhoneTest
-
-The current working version of the iOS front-end, written in Swift. This is the main mobile application intended for testing and production builds.
+1. Fork the repo.  
+2. Create a feature branch.  
+3. Submit a PR with tests and clear commit messages.  
+4. Ensure all linting & Docker checks pass.
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
