@@ -7,6 +7,6 @@ struct PoseBuilderConfiguration {
     
     // These are important for multiple-person pose estimation (calibration tuning)
     var localSearchRadius: Int = 3
-    var matchingJointDistance:  Float = 15.0
+    var matchingJointDistance:  Double = 15.0
     var adjacentJointOffsetRefinementSteps: Int = 5
 }
