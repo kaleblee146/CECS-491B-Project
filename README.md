@@ -15,7 +15,6 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
     - [Camera](#camera)
     - [DjangoBackend](#djangobackend)
     - [MoveMentorApp](#movementorapp)
-  - [Contributing](#contributing)
   - [License](#license)
 
 ## Directory Structure
@@ -134,13 +133,6 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
   - Login & user profile  
   - Workout plan views  
   - Real-time feedback UI  
-
-## Contributing
-
-1. Fork the repo.  
-2. Create a feature branch.  
-3. Submit a PR with tests and clear commit messages.  
-4. Ensure all linting & Docker checks pass.
 
 ## License
 
