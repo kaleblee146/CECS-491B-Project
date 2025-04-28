@@ -88,10 +88,11 @@ class ViewController: UIViewController {
     }
 
     @objc private func openSettings() {
-        let configVC = ConfigurationViewController()
-        configVC.modalPresentationStyle = .overFullScreen
-        present(configVC, animated: true)
+    let hostingController = UIHostingController(rootView: CameraSettingsView())
+    hostingController.modalPresentationStyle = .overFullScreen
+    self.present(hostingController, animated: true, completion: nil)
     }
+
 
     private func setupCamera() {
         videoCapture.delegate = self
