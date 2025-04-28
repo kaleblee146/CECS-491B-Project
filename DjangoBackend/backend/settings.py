@@ -15,6 +15,10 @@ ALLOWED_HOSTS = [
     "ec2-52-53-157-43.us-west-1.compute.amazonaws.com",
     "localhost",
     "127.0.0.1",
+    #'green-env-usw1.us-west-1.elasticbeanstalk.com',
+    #'172.31.13.207',  # Current instance's private IP
+    # allow any host (for EB health-checks)
+    "*",
 ]
 # allow extra hosts injected at deploy time
 extra_hosts = os.getenv("ALLOWED_HOSTS_EXTRA", "")
