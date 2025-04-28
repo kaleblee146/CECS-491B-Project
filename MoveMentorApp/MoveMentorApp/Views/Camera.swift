@@ -8,32 +8,37 @@
 import SwiftUI
 
 struct CameraView: View {
+    @State private var goToSettings = false
+
     var body: some View {
-        NavigationStack {
-            ZStack {
-                CameraUIView()
-                    .edgesIgnoringSafeArea(.all)
-                
-                VStack {
-                    HStack {
-                        Spacer()
-                        NavigationLink(destination: ConfigurationView()) {
-                            Image(systemName: "gearshape.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(.white)
-                                .padding()
-                        }
-                    }
+        ZStack {
+            CameraUIView()
+                .edgesIgnoringSafeArea(.all)
+            
+            VStack {
+                HStack {
                     Spacer()
+                    Button(action: {
+                        goToSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.white)
+                            .padding()
+                    }
                 }
+                Spacer()
             }
-            .background(Color.black)
-            .edgesIgnoringSafeArea(.all)
+        }
+        .background(Color.black)
+        .edgesIgnoringSafeArea(.all)
+        .fullScreenCover(isPresented: $goToSettings) {
+            ConfigurationView()
         }
     }
 }
 
-// Wrapper for original ViewController
+// Wrap the UIKit camera view
 struct CameraUIView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> ViewController {
         return ViewController()
@@ -42,14 +47,14 @@ struct CameraUIView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: ViewController, context: Context) {}
 }
 
-// TEMPORARY settings view so the app builds
+// Simple placeholder settings screen
 struct ConfigurationView: View {
     var body: some View {
-        Text("Settings Coming Soon!")
-            .foregroundColor(.white)
-            .background(Color.black)
-            .ignoresSafeArea()
+        ZStack {
+            Color.black.ignoresSafeArea()
+            Text("Settings Coming Soon!")
+                .foregroundColor(.white)
+                .font(.title)
+        }
     }
 }
-
-
