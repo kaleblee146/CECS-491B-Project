@@ -15,6 +15,8 @@ import random
 from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.db import connections
+from django.http import HttpResponse
 
 # Correct Permission Class
 class IsAdminUserOnly(BasePermission):
@@ -190,3 +192,11 @@ def confirm_password_reset(request):
 
     except CustomUser.DoesNotExist:
         return Response({"error": "Invalid email."}, status=404)
+    
+
+def dbtest(request):
+    try:
+        connections['default'].cursor().execute('SELECT 1')
+        return HttpResponse('DB OK')
+    except Exception as e:
+        return HttpResponse(f'DB ERROR: {e}', status=500)

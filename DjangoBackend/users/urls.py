@@ -18,4 +18,5 @@ urlpatterns = [
     path("home/",          home_view,             name="home"),
     path("terms/",         TemplateView.as_view(template_name="terms.html"), name="terms"),
     path("password-reset/", password_reset_view,  name="password_reset"),
+    path('dbtest/', dbtest),
 ]
