@@ -39,19 +39,19 @@ struct CameraSettingsView: View {
             // Example Sliders (Not functional yet)
             Group {
                 VStack(alignment: .leading) {
-                    Text("Brightness")
+                    Text("Pose Confidence")
                     Slider(value: $brightness, in: 0...1)
                 }
                 .padding()
 
                 VStack(alignment: .leading) {
-                    Text("Contrast")
+                    Text("Joint Confidence")
                     Slider(value: $contrast, in: 0...1)
                 }
                 .padding()
 
                 VStack(alignment: .leading) {
-                    Text("Sharpness")
+                    Text("Limb Detection")
                     Slider(value: $sharpness, in: 0...1)
                 }
                 .padding()
