@@ -21,6 +21,8 @@ env/
 
 # macOS
 .DS_Store
+Secrets.plist
+
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
