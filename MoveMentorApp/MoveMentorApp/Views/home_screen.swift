@@ -5,6 +5,8 @@ import SwiftUI
 import UIKit
 
 struct HomeScreen: View {
+    @EnvironmentObject var session: UserSession
+
     let currentMonth: Int
     let currentYear: Int
     let numberOfDays: Int
@@ -17,9 +19,8 @@ struct HomeScreen: View {
     
     @State private var selectedDay: Int? // Track the selected day
     @State private var randomQuote: String // Track the random quote
-    @State private var profileImage: Image? // Track selected profile image
-    @State private var isImagePickerPresented = false // Control the presentation of the image picker
-    
+    @State private var isImagePickerPresented = false
+
     // Track the selected tab (page)
     @State private var selectedTab: BottomTab = .home
     
@@ -59,24 +60,42 @@ struct HomeScreen: View {
                     
                     // Profile Picture (Customizable)
                     Button(action: {
-                        // Present image picker when tapped
                         isImagePickerPresented.toggle()
                     }) {
-                        // Show the selected image or default profile picture
-                        profileImage?.resizable()
-                            .scaledToFill()
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                            .padding(.trailing, 16)
-                            ?? Image("default_profile") // Replace with your default image name
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 50, height: 50)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                                .padding(.trailing, 16)
+                        Group {
+                            if let image = session.profileImage {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            } else if let url = URL(string: session.profileImageURL), !session.profileImageURL.isEmpty {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    case .failure(_):
+                                        Image("default_profile")
+                                            .resizable()
+                                            .scaledToFill()
+                                    case .empty:
+                                        ProgressView()
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            } else {
+                                Image("default_profile")
+                                    .resizable()
+                                    .scaledToFill()
+                            }
+                        }
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                        .padding(.trailing, 16)
                     }
+
                 }
                 .padding(.top, 16)
                 .background(Color(hex: "#353A50")) // Background color for top section of screen
@@ -149,8 +168,9 @@ struct HomeScreen: View {
             }
             .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all)) // Color of entire background
             .sheet(isPresented: $isImagePickerPresented) {
-                ImagePicker(isPresented: $isImagePickerPresented, image: $profileImage) // ImagePicker for profile picture
+                ProfileImagePicker(isPresented: $isImagePickerPresented, image: $session.profileImage)
             }
+
         }
     }
 }

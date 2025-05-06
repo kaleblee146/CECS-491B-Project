@@ -1,10 +1,3 @@
-//
-//  LoginView.swift
-//  MoveMentorDraft
-//
-//  Created by Kaleb Lee on 3/10/25.
-//  Modified by Chase Sansom on 4/6/25.
-
 import SwiftUI
 
 struct LoginView: View {
@@ -54,7 +47,6 @@ struct LoginView: View {
                     .cornerRadius(8)
                     .disableAutocorrection(true)
                     .colorScheme(.dark)
-
                     .padding(.horizontal, 25)
                     .padding(.bottom, 10)
                     .textInputAutocapitalization(.never)
@@ -75,6 +67,7 @@ struct LoginView: View {
                 .padding(.bottom, 10)
                 .navigationDestination(isPresented: $correctPass) {
                     Progress_1_View()
+                        .environmentObject(session)
                 }
                 
                 if !loginMessage.isEmpty {
@@ -150,12 +143,10 @@ struct LoginView: View {
     }
     
     // MARK: - Perform Login
-    /// Uses the NetworkManager to attempt login with the provided username and password.
     private func performLogin() async {
         do {
             let response = try await NetworkManager.shared.loginUser(username: username, password: password)
             
-            // Example: Check if the response includes an access token.
             if let accessToken = response["access"] as? String {
                 loginMessage = "Login Successful!"
                 
@@ -163,14 +154,23 @@ struct LoginView: View {
                 session.firstName = response["firstName"] as? String ?? ""
                 session.lastName = response["lastName"] as? String ?? ""
                 session.email = response["email"] as? String ?? ""
-                session.age = response["age"] as? Int ?? 0
+                session.phone = response["phone"] as? String ?? ""
+                session.role = response["role"] as? String ?? ""
                 session.height = response["height"] as? Double ?? 0.0
                 session.weight = response["weight"] as? Double ?? 0.0
-                session.role = response["role"] as? String ?? ""
-                session.joinedYear = Calendar.current.component(.year, from: ISO8601DateFormatter().date(from: response["date_joined"] as? String ?? "") ?? Date())
-
+                session.age = response["age"] as? Int ?? 0
+                
+                if let dateJoinedString = response["date_joined"] as? String,
+                   let dateJoined = ISO8601DateFormatter().date(from: dateJoinedString) {
+                    session.joinedYear = Calendar.current.component(.year, from: dateJoined)
+                } else {
+                    session.joinedYear = Calendar.current.component(.year, from: Date())
+                }
+                
+                session.profileImageURL = response["profile_picture_url"] as? String ?? ""
+                session.isAuthenticated = true
+                
                 correctPass = true
-                // Optionally, store the access token securely (e.g., in Keychain)
             } else {
                 loginMessage = "Unexpected response: \(response)"
             }
@@ -181,7 +181,7 @@ struct LoginView: View {
             case .badStatusCode(let code):
                 loginMessage = "Server returned status code \(code)."
             case .parsingError:
-                loginMessage = "Failed to parse JSON response."
+                loginMessage = "Failed to parse response."
             }
         } catch {
             loginMessage = "Login failed: \(error.localizedDescription)"

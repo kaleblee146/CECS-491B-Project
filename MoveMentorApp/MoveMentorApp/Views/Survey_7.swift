@@ -37,6 +37,8 @@ struct SurveyView7: View {
 
                     )
                     
+                Spacer()
+                
                 HStack{
                     Button("BACK"){
                         goBack = true
@@ -63,7 +65,7 @@ struct SurveyView7: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 250)
+                .padding(.bottom, 40)
                     
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

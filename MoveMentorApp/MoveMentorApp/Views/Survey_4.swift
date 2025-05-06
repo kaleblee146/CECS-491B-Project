@@ -15,6 +15,8 @@ struct SurveyView4: View {
     @State private var goBack = false
     @State private var continueButton = false
     
+    @State private var showAlert = false
+    
     var body: some View{
         NavigationStack{
             VStack{
@@ -32,6 +34,7 @@ struct SurveyView4: View {
                     .padding(.horizontal, 25)
                     .padding(.bottom, 100)
                     
+                Spacer()
                 
                 HStack{
                     Button("BACK"){
@@ -48,11 +51,12 @@ struct SurveyView4: View {
 
                     
                     Button("CONTINUE"){
-                        if let weightDouble = Double(setWeight) {
+                        if let weightDouble = Double(setWeight), weightDouble > 0 {
                             registrationData.weight = weightDouble
                             continueButton = true
-                        }
-                    }
+                        } else {
+                            showAlert = true
+                        }                    }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)
                     .background(Color.magenta)
@@ -61,7 +65,7 @@ struct SurveyView4: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 250)
+                .padding(.bottom, 40)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
@@ -70,6 +74,11 @@ struct SurveyView4: View {
             }
             .navigationDestination(isPresented: $continueButton){
                 SurveyView5()
+            }
+            .alert("⚖️ Invalid Weight", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Please enter a valid number greater than 0 for your weight.")
             }
         }
     }

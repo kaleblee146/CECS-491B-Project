@@ -20,6 +20,9 @@ struct SurveyView6: View {
     @State private var goal4: String = ""
     @State private var goal5: String = ""
     
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    
     
     var body: some View{
         NavigationStack{
@@ -69,6 +72,8 @@ struct SurveyView6: View {
                     .colorScheme(.dark)
                     .padding(.horizontal, 25)
                 
+                Spacer()
+                
                 HStack{
                     Button("BACK"){
                         goBack = true
@@ -84,6 +89,18 @@ struct SurveyView6: View {
 
                     
                     Button("REGISTER"){
+                        var missing = [String]()
+                        if goal1.trimmingCharacters(in: .whitespaces).isEmpty { missing.append("Goal 1") }
+                        if goal2.trimmingCharacters(in: .whitespaces).isEmpty { missing.append("Goal 2") }
+                        if goal3.trimmingCharacters(in: .whitespaces).isEmpty { missing.append("Goal 3") }
+                        if goal4.trimmingCharacters(in: .whitespaces).isEmpty { missing.append("Goal 4") }
+                        if goal5.trimmingCharacters(in: .whitespaces).isEmpty { missing.append("Goal 5") }
+
+                        if !missing.isEmpty {
+                            alertMessage = "Please fill out the following: \(missing.joined(separator: ", "))"
+                            showAlert = true
+                            return
+                        }
                         registrationData.goals = [goal1, goal2, goal3, goal4, goal5]
                                 .filter { !$0.isEmpty }
                                 .joined(separator: ", ")
@@ -120,7 +137,7 @@ struct SurveyView6: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 250)
+                .padding(.bottom, 40)
                 
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -130,6 +147,11 @@ struct SurveyView6: View {
             }
             .navigationDestination(isPresented: $continueButton){
                 SurveyView7()
+            }
+            .alert("⚠️ Missing Goals", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(alertMessage)
             }
         }
     }

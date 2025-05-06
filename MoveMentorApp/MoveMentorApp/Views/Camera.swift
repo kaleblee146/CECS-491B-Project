@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CameraView: UIViewControllerRepresentable {
+    @EnvironmentObject var session: UserSession
+
     func makeUIViewController(context: Context) -> ViewController {
         return ViewController()
     }

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct HomeNavBarView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToWorkout = false
     @State private var goToProfile = false
     @State private var goToExplore = false
@@ -12,7 +14,7 @@ struct HomeNavBarView: View {
         NavigationStack {
             HStack {
                 NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
-                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View().environmentObject(session), isActive: $goToProfile) { EmptyView() }.hidden()
                 NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
                 NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
                 
@@ -51,6 +53,8 @@ struct HomeNavBarView: View {
 
 
 struct WorkoutNavBarView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToHome = false
     @State private var goToWorkout = false
     @State private var goToProfile = false
@@ -62,8 +66,8 @@ struct WorkoutNavBarView: View {
     var body: some View {
         NavigationStack {
             HStack {
-                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
-                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen().environmentObject(session), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View().environmentObject(session), isActive: $goToProfile) { EmptyView() }.hidden()
                 NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
                 NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
                 
@@ -100,6 +104,8 @@ struct WorkoutNavBarView: View {
 }
 
 struct ProfileNavBarView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToWorkout = false
     @State private var goToHome = false
     @State private var goToExplore = false
@@ -111,7 +117,7 @@ struct ProfileNavBarView: View {
         NavigationStack {
             HStack {
                 NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
-                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen().environmentObject(session), isActive: $goToHome) { EmptyView() }.hidden()
                 NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
                 NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
                 
@@ -148,6 +154,8 @@ struct ProfileNavBarView: View {
 }
 
 struct ExploreNavBarView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToWorkout = false
     @State private var goToProfile = false
     @State private var goToSettings = false
@@ -159,8 +167,8 @@ struct ExploreNavBarView: View {
         NavigationStack {
             HStack {
                 NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
-                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
-                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View().environmentObject(session), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen().environmentObject(session), isActive: $goToHome) { EmptyView() }.hidden()
                 NavigationLink(destination: SettingsView(), isActive: $goToSettings) { EmptyView() }.hidden()
                 
                 HStack {
@@ -196,6 +204,8 @@ struct ExploreNavBarView: View {
 }
 
 struct SettingsNavBarView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToWorkout = false
     @State private var goToProfile = false
     @State private var goToExplore = false
@@ -207,9 +217,9 @@ struct SettingsNavBarView: View {
         NavigationStack {
             HStack {
                 NavigationLink(destination: CameraView(), isActive: $goToWorkout) { EmptyView() }.hidden()
-                NavigationLink(destination: Progress_1_View(), isActive: $goToProfile) { EmptyView() }.hidden()
+                NavigationLink(destination: Progress_1_View().environmentObject(session), isActive: $goToProfile) { EmptyView() }.hidden()
                 NavigationLink(destination: ExploreView(), isActive: $goToExplore) { EmptyView() }.hidden()
-                NavigationLink(destination: HomeScreen(), isActive: $goToHome) { EmptyView() }.hidden()
+                NavigationLink(destination: HomeScreen().environmentObject(session), isActive: $goToHome) { EmptyView() }.hidden()
                 
                 HStack {
                     Spacer()

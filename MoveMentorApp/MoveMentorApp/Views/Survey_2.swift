@@ -15,6 +15,8 @@ struct SurveyView2: View {
     @State private var goBack = false
     @State private var continueButton = false
     
+    @State private var showAlert = false
+    
     
     var body: some View {
         NavigationStack{
@@ -31,6 +33,8 @@ struct SurveyView2: View {
                 .pickerStyle(.menu)
                 //pickerStyle(.wheel)
                 
+                Spacer()
+                
                 HStack{
                     Button("BACK"){
                         goBack = true
@@ -45,9 +49,13 @@ struct SurveyView2: View {
                     
 
                     
-                    Button("CONTINUE"){
-                        registrationData.age = selectedAge
-                        continueButton = true
+                    Button("CONTINUE") {
+                        if selectedAge > 0 {
+                            registrationData.age = selectedAge
+                            continueButton = true
+                        } else {
+                            showAlert = true
+                        }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)
@@ -57,7 +65,7 @@ struct SurveyView2: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 250)
+                .padding(.bottom, 40)
                 
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -67,6 +75,11 @@ struct SurveyView2: View {
             }
             .navigationDestination(isPresented: $continueButton){
                 SurveyView3()
+            }
+            .alert("🎂 Age Required", isPresented: $showAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Please select your age before continuing.")
             }
         }
     }

@@ -5,6 +5,9 @@ struct Progress_2_View: View {
 
     @State private var goToAnalytics = false
     @State private var goToStats = false
+    
+    @State private var isImagePickerPresented = false
+
 
     var body: some View {
         NavigationStack {
@@ -12,10 +15,36 @@ struct Progress_2_View: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         // Profile photo
-                        Circle()
-                            .frame(width: 138, height: 138)
-                            .padding(.top, 40)
-
+                        Button(action: {
+                            isImagePickerPresented = true
+                        }) {
+                            if let image = session.profileImage {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 138, height: 138)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            } else if let url = URL(string: session.profileImageURL) {
+                                AsyncImage(url: url) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                .frame(width: 138, height: 138)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            } else {
+                                Circle()
+                                    .fill(Color.gray)
+                                    .frame(width: 138, height: 138)
+                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            }
+                        }
+                        .padding(.top, 40)
+                        
                         Text("\(session.firstName) \(session.lastName)")
                             .foregroundColor(.white)
 
@@ -101,6 +130,9 @@ struct Progress_2_View: View {
             .navigationDestination(isPresented: $goToStats) {
                 Progress_3_View()
                     .environmentObject(session)
+            }
+            .sheet(isPresented: $isImagePickerPresented) {
+                ProfileImagePicker(isPresented: $isImagePickerPresented, image: $session.profileImage)
             }
         }
     }

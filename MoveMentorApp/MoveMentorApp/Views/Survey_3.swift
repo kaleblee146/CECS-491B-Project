@@ -14,6 +14,8 @@ struct SurveyView3: View {
     
     @State private var selectedUnit: unit = .Select
     
+    @State private var showAlert = false
+    
     enum unit: String, CaseIterable, Identifiable {
         case Select, Imperial, Metric
         var id : Self {self}
@@ -41,7 +43,7 @@ struct SurveyView3: View {
                 .pickerStyle(MenuPickerStyle())
                 .frame(width: 133, height: 42)
                 
-                
+                Spacer()
                 
                 HStack{
                     Button("BACK"){
@@ -58,8 +60,12 @@ struct SurveyView3: View {
 
                     
                     Button("CONTINUE"){
-                        registrationData.units = selectedUnit.rawValue
-                        continueButton = true
+                        if selectedUnit != .Select {
+                            registrationData.units = selectedUnit.rawValue
+                            continueButton = true
+                        } else {
+                            showAlert = true
+                        }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)
@@ -69,7 +75,7 @@ struct SurveyView3: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 250)
+                .padding(.bottom, 40)
                 
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -79,6 +85,11 @@ struct SurveyView3: View {
             }
             .navigationDestination(isPresented: $continueButton){
                 SurveyView4()
+            }
+            .alert("📏 Unit Required", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Please select a unit of measurement before continuing.")
             }
         }
     }

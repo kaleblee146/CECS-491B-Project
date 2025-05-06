@@ -14,6 +14,7 @@ struct SurveyView1: View {
     @State private var continueButton = false
     @State private var selectedImage: Int? = nil
     @State private var tempGender: String = ""
+    @State private var showAlert = false
 
     
     var body: some View{
@@ -43,6 +44,9 @@ struct SurveyView1: View {
                             tempGender = "Female"
                         }
                 }
+                
+                Spacer()
+                
                 HStack{
                     Button("BACK"){
                         goBack = true
@@ -58,8 +62,12 @@ struct SurveyView1: View {
 
                     
                     Button("CONTINUE"){
-                        registrationData.gender = tempGender
-                        continueButton = true
+                        if let _ = selectedImage {
+                            registrationData.gender = tempGender
+                            continueButton = true
+                        } else {
+                            showAlert = true
+                        }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 164, height: 60)
@@ -69,7 +77,7 @@ struct SurveyView1: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                .padding(.top, 275)
+                .padding(.bottom, 40)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
@@ -79,6 +87,9 @@ struct SurveyView1: View {
             .navigationDestination(isPresented: $continueButton){
                 SurveyView2()
             }
+            .alert("Please select a gender before continuing.", isPresented: $showAlert) {
+                    Button("OK", role: .cancel) {}
+                }
         }
     }
 }

@@ -16,6 +16,8 @@ struct SurveyView5: View {
     @State private var goBack = false
     @State private var continueButton = false
     
+    @State private var showAlert = false
+    
     var body: some View{
         NavigationStack{
             VStack{
@@ -44,6 +46,8 @@ struct SurveyView5: View {
                     .padding(.horizontal, 25)
                     .padding(.bottom, 100)
                 
+                Spacer()
+                
                 HStack{
                     Button("BACK"){
                         goBack = true
@@ -60,12 +64,18 @@ struct SurveyView5: View {
                     
                     Button("CONTINUE"){
                         if let feet = Double(heightFeet),
-                           let inches = Double(heightInches) {
-                            
+                           let inches = Double(heightInches),
+                           feet >= 0, inches >= 0 {
+
                             let totalHeightInInches = feet * 12 + inches
-                            registrationData.height = totalHeightInInches //
-                            
-                            continueButton = true
+                            if totalHeightInInches > 0 {
+                                registrationData.height = totalHeightInInches
+                                continueButton = true
+                            } else {
+                                showAlert = true
+                            }
+                        } else {
+                            showAlert = true
                         }
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
@@ -76,7 +86,7 @@ struct SurveyView5: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .padding()
                 }
-                    .padding(.top, 250)
+                    .padding(.bottom, 40)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.navy)
@@ -85,6 +95,11 @@ struct SurveyView5: View {
             }
             .navigationDestination(isPresented: $continueButton){
                 SurveyView6()
+            }
+            .alert("📏 Invalid Height", isPresented: $showAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Please enter a valid height greater than 0.")
             }
             
         }

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum NetworkError: Error {
     case invalidURL
@@ -36,7 +37,7 @@ class NetworkManager {
         // 1) Construct URL
        // guard let url = URL(string: "https://www.movementor.app/register/") else {
         
-        guard let url = URL(string: "http://192.168.1.123:8000/api/register/") else {
+        guard let url = URL(string: "https://10.39.78.132:8000/api/register/") else {
             throw NetworkError.invalidURL
         }
         
@@ -109,7 +110,7 @@ class NetworkManager {
     // MARK: - Login User
     /// Logs in an existing user with username/password.
     func loginUser(username: String, password: String) async throws -> [String: Any] {
-        guard let url = URL(string: "http://192.168.1.123:8000/api/users/login/"
+        guard let url = URL(string: "https://10.39.78.132:8000/api/login/"
 ) else {
         //guard let url = URL(string: "http://localhost:8000/api/users/api/login/") else {
         //guard let url = URL(string: "https://www.movementor.app/login/") else {
@@ -140,6 +141,48 @@ class NetworkManager {
         
         return jsonDict
     }
+    
+    func uploadProfileImage(image: UIImage, username: String) async throws {
+        guard let url = URL(string: "https://127.0.0.1:8000/api/upload-profile-picture/") else {
+            throw NetworkError.invalidURL
+        }
+
+        let boundary = UUID().uuidString
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var data = Data()
+
+        // Add username (or auth token, depending on your auth flow)
+        let usernameData = "--\(boundary)\r\n"
+            + "Content-Disposition: form-data; name=\"username\"\r\n\r\n"
+            + "\(username)\r\n"
+        data.append(Data(usernameData.utf8))
+
+        // Convert UIImage to JPEG data
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw NetworkError.parsingError
+        }
+
+        // Add image
+        data.append(Data("--\(boundary)\r\n".utf8))
+        data.append(Data("Content-Disposition: form-data; name=\"profile_picture\"; filename=\"profile.jpg\"\r\n".utf8))
+        data.append(Data("Content-Type: image/jpeg\r\n\r\n".utf8))
+        data.append(imageData)
+        data.append(Data("\r\n".utf8))
+
+        data.append(Data("--\(boundary)--\r\n".utf8))
+        request.httpBody = data
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse,
+           !(200...299).contains(httpResponse.statusCode) {
+            throw NetworkError.badStatusCode(httpResponse.statusCode)
+        }
+    }
+
 }
 
 class RegistrationData: ObservableObject {
@@ -172,6 +215,11 @@ class UserSession: ObservableObject {
     @Published var age: Int = 0
     @Published var joinedYear: Int = Calendar.current.component(.year, from: Date())
     @Published var isAuthenticated: Bool = false
+    @Published var profileImage: Image? = nil
+    @Published var rawProfileUIImage: UIImage? = nil
+    @Published var profileImageURL: String = ""
+
+
 }
 
 extension DateFormatter {

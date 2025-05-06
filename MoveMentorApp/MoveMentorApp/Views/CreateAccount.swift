@@ -25,6 +25,14 @@ struct CreateAccountView: View {
     @State private var lastName: String = ""
     @State private var gender: String = ""
     
+    @State private var showUsernameError = false
+    @State private var showEmailError = false
+    @State private var showPhoneError = false
+    @State private var showDOBError = false
+    @State private var showPasswordError = false
+    @State private var showFirstNameError = false
+    @State private var showLastNameError = false
+    
     
     @State private var statusMessage: String = ""
 
@@ -59,6 +67,9 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showUsernameError {
+                            errorText("Username is required.")
+                        }
                         
                         TextField("Email", text: $registrationData.email)
                             .padding()
@@ -69,6 +80,10 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showEmailError {
+                            errorText("Email is required.")
+                        }
+                        
                         
                         TextField("Phone", text: $registrationData.phone)
                             .padding()
@@ -79,6 +94,9 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showPhoneError {
+                            errorText("Phone is required.")
+                        }
                         
                         DatePicker("Date of Birth", selection: $registrationData.dob, displayedComponents: .date)
                             .datePickerStyle(.compact)
@@ -90,6 +108,9 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showDOBError {
+                            errorText("Please enter a valid birthdate (13+ years old).")
+                        }
     
                         SecureField("Password", text: $registrationData.password)
                             .padding()
@@ -100,6 +121,9 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showPasswordError {
+                            errorText("Password is required (at least 8 Characters).")
+                        }
                     }
                     
                     // New Registration Fields
@@ -113,6 +137,9 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showFirstNameError {
+                            errorText("First Name is required.")
+                        }
                         
                         TextField("Last Name", text: $registrationData.lastName)
                             .padding()
@@ -123,6 +150,9 @@ struct CreateAccountView: View {
                             .colorScheme(.dark)
                             .padding(.horizontal, 25)
                             .padding(.bottom, 5)
+                        if showLastNameError {
+                            errorText("Last Name is required.")
+                        }
                        
                           
                     }
@@ -134,8 +164,7 @@ struct CreateAccountView: View {
                             await registerUser()
                         }
                          */
-                        gotoOnboard = true
-
+                        validateAndProceed()
                     }
                     .font(Font.custom("Roboto_Condensed-Black", size: 18))
                     .frame(width: 350, height: 55)
@@ -208,6 +237,38 @@ struct CreateAccountView: View {
         }
     }
     
+    func validateAndProceed() {
+            let today = Date()
+            let calendar = Calendar.current
+            let ageComponents = calendar.dateComponents([.year], from: registrationData.dob, to: today)
+            let age = ageComponents.year ?? 0
+
+            showUsernameError = registrationData.username.isEmpty
+            showEmailError = !registrationData.email.contains("@")
+            showPhoneError = registrationData.phone.isEmpty
+            showPasswordError = registrationData.password.count < 6
+            showFirstNameError = registrationData.firstName.isEmpty
+            showLastNameError = registrationData.lastName.isEmpty
+            showDOBError = registrationData.dob > today || age < 13
+
+
+
+        let hasError = showUsernameError || showEmailError || showPhoneError || showPasswordError || showFirstNameError || showLastNameError || showDOBError
+
+
+            if !hasError {
+                gotoOnboard = true
+            }
+        }
+    
+    func errorText(_ message: String) -> some View {
+            Text(message)
+                .font(.caption)
+                .foregroundColor(.red)
+                .padding(.horizontal, 25)
+                .padding(.bottom, 5)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
     /*
     // MARK: - Register User
     /// Attempts to register a new user with all the provided fields.

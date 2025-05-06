@@ -6,6 +6,8 @@ struct Progress_1_View: View {
     @State private var goToStats = false
     @State private var goToCalendar = false
     @State private var selectedButton: Int? = nil
+    
+    @State private var isImagePickerPresented = false
 
     var body: some View {
         NavigationStack {
@@ -13,9 +15,36 @@ struct Progress_1_View: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         // Profile Circle
-                        Circle()
-                            .frame(width: 138, height: 138)
-                            .padding(.top, 40)
+                        Button(action: {
+                            isImagePickerPresented = true
+                        }) {
+                            if let image = session.profileImage {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 138, height: 138)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            } else if let url = URL(string: session.profileImageURL) {
+                                AsyncImage(url: url) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                .frame(width: 138, height: 138)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            } else {
+                                Circle()
+                                    .fill(Color.gray)
+                                    .frame(width: 138, height: 138)
+                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            }
+                        }
+                        .padding(.top, 40)
+
 
                         // Name and Member Info
                         Text("\(session.firstName) \(session.lastName)")
@@ -106,6 +135,26 @@ struct Progress_1_View: View {
                     .environmentObject(session)
 
             }
+            .sheet(isPresented: $isImagePickerPresented) {
+                ProfileImagePicker(isPresented: $isImagePickerPresented, image: $session.profileImage)
+            }
+
+            .onChange(of: session.profileImage) { _ in
+                if let uiImage = session.rawProfileUIImage {
+                    Task {
+                        do {
+                            try await NetworkManager.shared.uploadProfileImage(
+                                image: uiImage,
+                                username: session.username
+                            )
+                            print("✅ Profile picture uploaded successfully.")
+                        } catch {
+                            print("❌ Upload failed: \(error)")
+                        }
+                    }
+                }
+            }
+
         }
     }
 

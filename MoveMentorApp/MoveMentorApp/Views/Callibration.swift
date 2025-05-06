@@ -35,6 +35,8 @@ struct CameraViewSetPreview: UIViewRepresentable {
 }
 
 struct CallibrationView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var goToHome = false
     
     var body: some View {

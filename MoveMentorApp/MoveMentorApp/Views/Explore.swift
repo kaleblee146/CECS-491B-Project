@@ -57,6 +57,8 @@ class WorkoutViewModel: ObservableObject, Identifiable {
 
 //Explore View
 struct ExploreView: View {
+    @EnvironmentObject var session: UserSession
+
     @State private var searchText = ""
     @State private var page = 1
     @State private var selectedSort = "None"
