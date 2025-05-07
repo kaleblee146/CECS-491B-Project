@@ -8,9 +8,10 @@
 
 import UIKit
 import AVFoundation
+import SwiftUI
 
 class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, VideoCaptureDelegate {
-
+    
     var poseImageView: PoseImageView!
     var poseNet: PoseNet!
     let poseBuilder = PoseBuilder()
@@ -19,11 +20,24 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
 
     var repLabel: UILabel!
     var feedbackLabel: UILabel!
+    var pauseOverlay: UILabel!
+    var chatButton: UIButton!
+    var pauseButton: UIButton!
+    var tutorialButton: UIButton!
+
+    // Full-screen chat
+    var chatView: UIView!
+    var scrollView: UIScrollView!
+    var messageStack: UIStackView!
+    var messageField: UITextField!
+    var sendButton: UIButton!
+    var closeButton: UIButton!
 
     var repCount = 0
     var isCurling = false
     var isPaused = false
     var curlAngles: [CGFloat] = []
+    var feedbackTimer: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,14 +50,19 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
             return
         }
 
-        videoCapture.delegate = self
-
         setupPoseImageView()
         setupCamera()
-        setupSettingsButton()
-        setupRepCounter()
-        setupFeedbackLabel()
+        setupUI()
+        setupChatUI()
         startFeedbackTimer()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    }
+
+    private func startFeedbackTimer() {
+        feedbackTimer = Timer.scheduledTimer(withTimeInterval: 20.0, repeats: true) { _ in
+            self.generateAIFormFeedback()
+        }
     }
 
     private func setupPoseImageView() {
@@ -60,6 +79,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     }
 
     private func setupCamera() {
+        videoCapture.delegate = self
         videoCapture.setUp(sessionPreset: .high) { success in
             if success {
                 self.videoCapture.start()
@@ -71,8 +91,40 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
 
     private func setupUI() {
         repLabel = UILabel()
+        repLabel.text = "Reps: 0\nDoing: Curls"
+        repLabel.numberOfLines = 2
+        repLabel.font = .boldSystemFont(ofSize: 16)
+        repLabel.textColor = .white
+        repLabel.backgroundColor = .systemPink
+        repLabel.textAlignment = .center
+        repLabel.layer.cornerRadius = 10
+        repLabel.clipsToBounds = true
         repLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(repLabel)
+
+        feedbackLabel = UILabel()
+        feedbackLabel.text = "AI feedback will appear here."
+        feedbackLabel.numberOfLines = 2
+        feedbackLabel.font = .systemFont(ofSize: 14)
+        feedbackLabel.textColor = .white
+        feedbackLabel.backgroundColor = .darkGray
+        feedbackLabel.textAlignment = .center
+        feedbackLabel.layer.cornerRadius = 12
+        feedbackLabel.clipsToBounds = true
+        feedbackLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(feedbackLabel)
+
+        NSLayoutConstraint.activate([
+            repLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            repLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            repLabel.widthAnchor.constraint(equalToConstant: 100),
+            repLabel.heightAnchor.constraint(equalToConstant: 44),
+
+            feedbackLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -80),
+            feedbackLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            feedbackLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            feedbackLabel.heightAnchor.constraint(equalToConstant: 40)
+        ])
 
         tutorialButton = UIButton(type: .system)
         tutorialButton.setTitle("Tutorial", for: .normal)
@@ -82,6 +134,29 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         tutorialButton.translatesAutoresizingMaskIntoConstraints = false
         tutorialButton.addTarget(self, action: #selector(openTutorial), for: .touchUpInside)
         view.addSubview(tutorialButton)
+
+        NSLayoutConstraint.activate([
+            tutorialButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            tutorialButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            tutorialButton.widthAnchor.constraint(equalToConstant: 100),
+            tutorialButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+
+        pauseButton = UIButton(type: .system)
+        pauseButton.setTitle("Pause", for: .normal)
+        pauseButton.setTitleColor(.white, for: .normal)
+        pauseButton.backgroundColor = .systemPink
+        pauseButton.layer.cornerRadius = 10
+        pauseButton.translatesAutoresizingMaskIntoConstraints = false
+        pauseButton.addTarget(self, action: #selector(togglePause), for: .touchUpInside)
+        view.addSubview(pauseButton)
+
+        NSLayoutConstraint.activate([
+            pauseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            pauseButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            pauseButton.widthAnchor.constraint(equalToConstant: 100),
+            pauseButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
 
         chatButton = UIButton(type: .system)
         chatButton.setTitle("Chat", for: .normal)
@@ -93,35 +168,145 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         view.addSubview(chatButton)
 
         NSLayoutConstraint.activate([
-            repLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            repLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+            chatButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            chatButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            chatButton.widthAnchor.constraint(equalToConstant: 100),
+            chatButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
 
-    private func setupFeedbackLabel() {
-        feedbackLabel = UILabel()
-        feedbackLabel.translatesAutoresizingMaskIntoConstraints = false
-        feedbackLabel.text = ""
-        feedbackLabel.textColor = .white
-        feedbackLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        feedbackLabel.font = UIFont.systemFont(ofSize: 16)
-        feedbackLabel.numberOfLines = 0
-        feedbackLabel.textAlignment = .center
-        feedbackLabel.layer.cornerRadius = 10
-        feedbackLabel.layer.masksToBounds = true
-        view.addSubview(feedbackLabel)
+    private func setupChatUI() {
+        chatView = UIView()
+        chatView.backgroundColor = .white
+        chatView.translatesAutoresizingMaskIntoConstraints = false
+        chatView.isHidden = true
+        view.addSubview(chatView)
+
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        chatView.addSubview(scrollView)
+
+        messageStack = UIStackView()
+        messageStack.axis = .vertical
+        messageStack.spacing = 10
+        messageStack.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(messageStack)
+
+        messageField = UITextField()
+        messageField.placeholder = "Ask the AI..."
+        messageField.borderStyle = .roundedRect
+        messageField.translatesAutoresizingMaskIntoConstraints = false
+        messageField.delegate = self
+        chatView.addSubview(messageField)
+
+        sendButton = UIButton(type: .system)
+        sendButton.setTitle("Send", for: .normal)
+        sendButton.addTarget(self, action: #selector(sendChat), for: .touchUpInside)
+        sendButton.translatesAutoresizingMaskIntoConstraints = false
+        chatView.addSubview(sendButton)
+
+        closeButton = UIButton(type: .system)
+        closeButton.setTitle("X", for: .normal)
+        closeButton.setTitleColor(.systemRed, for: .normal)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.addTarget(self, action: #selector(hideChat), for: .touchUpInside)
+        chatView.addSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            feedbackLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            feedbackLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            feedbackLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            chatView.topAnchor.constraint(equalTo: view.topAnchor),
+            chatView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            chatView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            chatView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
+            scrollView.topAnchor.constraint(equalTo: chatView.topAnchor, constant: 60),
+            scrollView.leadingAnchor.constraint(equalTo: chatView.leadingAnchor, constant: 16),
+            scrollView.trailingAnchor.constraint(equalTo: chatView.trailingAnchor, constant: -16),
+            scrollView.bottomAnchor.constraint(equalTo: messageField.topAnchor, constant: -12),
+
+            messageStack.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            messageStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            messageStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            messageStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            messageStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+            messageField.leadingAnchor.constraint(equalTo: chatView.leadingAnchor, constant: 16),
+            messageField.bottomAnchor.constraint(equalTo: chatView.bottomAnchor, constant: -16),
+            messageField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -12),
+            messageField.heightAnchor.constraint(equalToConstant: 40),
+
+            sendButton.trailingAnchor.constraint(equalTo: chatView.trailingAnchor, constant: -16),
+            sendButton.centerYAnchor.constraint(equalTo: messageField.centerYAnchor),
+            sendButton.widthAnchor.constraint(equalToConstant: 50),
+
+            closeButton.topAnchor.constraint(equalTo: chatView.topAnchor, constant: 20),
+            closeButton.trailingAnchor.constraint(equalTo: chatView.trailingAnchor, constant: -20)
         ])
     }
 
-    private func startFeedbackTimer() {
-        feedbackTimer = Timer.scheduledTimer(withTimeInterval: 20.0, repeats: false) { _ in
-            self.generateAIFormFeedback()
+    @objc private func sendChat() {
+        guard let text = messageField.text, !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        addMessage(text, isUser: true)
+        messageField.text = ""
+
+        Task {
+            let reply = try? await OpenAIService.shared.getFeedback(prompt: text)
+            DispatchQueue.main.async {
+                self.addMessage(reply ?? "(No reply)", isUser: false)
+            }
         }
+    }
+
+    private func addMessage(_ text: String, isUser: Bool) {
+        let label = UILabel()
+        label.text = text
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = isUser ? .white : .black
+        label.backgroundColor = isUser ? .systemPink : UIColor.systemGray5
+        label.layer.cornerRadius = 14
+        label.layer.masksToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.textAlignment = .left
+
+        messageStack.addArrangedSubview(label)
+        scrollView.layoutIfNeeded()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            let bottomOffset = CGPoint(x: 0, y: self.scrollView.contentSize.height - self.scrollView.bounds.height + self.scrollView.contentInset.bottom)
+            self.scrollView.setContentOffset(bottomOffset, animated: true)
+        }
+    }
+
+    @objc private func showChat() {
+        chatView.isHidden = false
+        messageField.becomeFirstResponder()
+    }
+
+    @objc private func hideChat() {
+        chatView.isHidden = true
+        messageField.resignFirstResponder()
+    }
+
+    @objc private func keyboardWillChange(notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        view.frame.origin.y = keyboardFrame.origin.y >= UIScreen.main.bounds.height ? 0 : -keyboardFrame.height + 60
+    }
+
+    @objc private func openTutorial() {
+        if let url = URL(string: "https://www.youtube.com/shorts/iui51E31sX8") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    @objc private func togglePause() {
+        isPaused.toggle()
+        pauseOverlay?.isHidden = !isPaused
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        sendChat()
+        return true
     }
 
     func angleBetween(jointA: CGPoint, jointB: CGPoint, jointC: CGPoint) -> CGFloat {
@@ -131,86 +316,67 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         let magAB = sqrt(ab.dx * ab.dx + ab.dy * ab.dy)
         let magCB = sqrt(cb.dx * cb.dx + cb.dy * cb.dy)
         guard magAB > 0 && magCB > 0 else { return 0 }
-        let cosineAngle = dot / (magAB * magCB)
-        return acos(cosineAngle) * 180 / .pi
+        return acos(dot / (magAB * magCB)) * 180 / .pi
     }
 
     func generateAIFormFeedback() {
         guard !curlAngles.isEmpty else { return }
-
-        let roundedAngles = curlAngles.map { Int($0) }
-        let prompt = """
-        Analyze the following bicep curl session:
-        Rep angles: \(roundedAngles)
-        Total reps: \(repCount)
-        Give me quick advice on whether form looks good, and how to improve.
-        """
-
-        Task {
+        let angles = curlAngles.map { Int($0) }
+        let prompt = "Analyze a bicep curl session. Reps: \(repCount), angles: \(angles). Give 1 helpful tip."
+        Task.detached(priority: .background) {
             do {
-                let response = try await OpenAIService.shared.getFeedback(prompt: prompt)
+                let feedback = try await OpenAIService.shared.getFeedback(prompt: prompt)
+                let line = feedback.components(separatedBy: ".").first ?? feedback
                 DispatchQueue.main.async {
-                    self.feedbackLabel.text = response
+                    self.feedbackLabel.text = line + "."
                 }
             } catch {
-                print("OpenAI error: \(error)")
+                print("OpenAI feedback error: \(error)")
             }
         }
     }
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        sendChat()
-        return true
-    }
-
-    // Dummy delegate methods for compatibility
+    // MARK: - VideoCaptureDelegate
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
-        guard let pixelBuffer = pixelBuffer,
-              let cgImage = pixelBuffer.toCGImage() else {
-            return
-        }
+        guard !isPaused,
+              let pixelBuffer = pixelBuffer,
+              let cgImage = pixelBuffer.toCGImage() else { return }
 
         self.lastFrame = cgImage
         poseNet.predict(cgImage)
     }
-}
 
-extension ViewController: PoseNetDelegate {
+    // MARK: - PoseNetDelegate
     func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
-        guard
-            let pose = self.poseBuilder.estimatePose(
-                from: predictions.heatmap,
-                offsets: predictions.offsets,
-                displacementsFwd: predictions.forwardDisplacementMap,
-                displacementsBwd: predictions.backwardDisplacementMap,
-                outputStride: predictions.modelOutputStride,
-                modelInputSize: predictions.modelInputSize
-            ),
-            let frame = self.lastFrame
-        else { return }
+        guard let pose = self.poseBuilder.estimatePose(
+            from: predictions.heatmap,
+            offsets: predictions.offsets,
+            displacementsFwd: predictions.forwardDisplacementMap,
+            displacementsBwd: predictions.backwardDisplacementMap,
+            outputStride: predictions.modelOutputStride,
+            modelInputSize: predictions.modelInputSize
+        ),
+        let frame = self.lastFrame else { return }
 
         DispatchQueue.main.async {
             self.poseImageView.show(poses: [pose], on: frame)
 
-            let leftShoulder = pose[.leftShoulder]
-            let leftElbow = pose[.leftElbow]
-            let leftWrist = pose[.leftWrist]
+            let shoulder = pose[.leftShoulder]
+            let elbow = pose[.leftElbow]
+            let wrist = pose[.leftWrist]
 
-            guard leftShoulder.isValid, leftElbow.isValid, leftWrist.isValid else { return }
+            guard shoulder.isValid, elbow.isValid, wrist.isValid else { return }
 
-            let angle = self.angleBetween(jointA: leftShoulder.position,
-                                          jointB: leftElbow.position,
-                                          jointC: leftWrist.position)
-
+            let angle = self.angleBetween(jointA: shoulder.position,
+                                          jointB: elbow.position,
+                                          jointC: wrist.position)
             self.curlAngles.append(angle)
 
-            if angle < 90 {
-                if !self.isCurling {
-                    self.isCurling = true
-                }
+            if angle < 90, !self.isCurling {
+                self.isCurling = true
             } else if self.isCurling && angle > 160 {
                 self.repCount += 1
-                self.repLabel.text = "Reps: \(self.repCount)"
+                self.repLabel.text = "Reps: \(self.repCount)\nDoing: Curls"
                 self.isCurling = false
             }
         }
