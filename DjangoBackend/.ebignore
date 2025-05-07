@@ -1,0 +1,38 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments & env files
+env/
+venv/
+.env
+.env.local
+
+# Logs & coverage reports
+*.log
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Git metadata
+.git/
+.gitignore
+
+# Docker tooling
+.dockerignore
+
+# OS artifacts
+.DS_Store
+
+# Documentation and diagrams
+Diagrams/
+*.pdf
+
+# Test directories
+tests/

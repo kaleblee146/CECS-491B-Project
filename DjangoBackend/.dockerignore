@@ -1,6 +1,28 @@
-env/
+# Python caches & bytecode
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+
+# Virtual environments & env files
+env/
+venv/
+.env
+.env.local
+
+# Git metadata
 .git/
 .gitignore
 
+# Docker tooling
+.dockerignore
+
+# Logs & coverage reports
+*.log
+htmlcov/
+coverage.xml
+*.egg-info/
+dist/
+build/
+
+# OS artifacts
+.DS_Store

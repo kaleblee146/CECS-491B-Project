@@ -1,28 +1,60 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
 # Django
 *.log
 *.pot
-*.pyc
-__pycache__/
-*.pyc
-*.pyo
 db.sqlite3
+db.sqlite3-journal
 media/
 
-# Virtual environment
+# Virtual environments
 env/
+venv/
 
-# IDE
-.idea/
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+
+# IDEs and editors
 .vscode/
-
-# Environment variables
-.env
-.env.local
+.idea/
 
 # macOS
 .DS_Store
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+# AWS RDS private keys
+/AWS RDS/
+
+# Xcode user data & workspace (iOS app)
+*.xcworkspace
+*.xcuserdatad
+*.xcuserstate
+xcuserdata/
+
+# Elastic Beanstalk configs at the repo root (if any)
+.elasticbeanstalk/
+
+# Test coverage / reports
+htmlcov/
+.coverage
+coverage.xml
+.pytest_cache/
+
+# Environment-variable files
+.env
+.env.local
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Node modules (if any subprojects use Node)
+node_modules/
+
+# Temporary editor or OS files
+*~
