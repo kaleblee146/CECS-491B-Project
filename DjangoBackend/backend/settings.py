@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     # Static files
     "whitenoise.runserver_nostatic",  # first so runserver uses Whitenoise too
     "django.contrib.staticfiles",
-    "django.contrib.staticfiles",
 
     # Third-party apps
     "corsheaders",
@@ -69,7 +68,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "channels",
-    "whitenoise.runserver_nostatic",
 
     # Project apps
     "backend.dash_app.apps.DashAppConfig",
