@@ -199,9 +199,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"  # or the Django builtin
-)
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

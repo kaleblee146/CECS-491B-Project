@@ -18,8 +18,9 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 COPY . ./
 
 # Generate static files
-RUN rm -rf /app/staticfiles && \
-    python manage.py collectstatic --noinput --clear
+ENV STATIC_ROOT=/app/staticfiles
+RUN rm -rf "$STATIC_ROOT" \
+ && python manage.py collectstatic --noinput --clear
 
 # Expose application port
 EXPOSE 8000
