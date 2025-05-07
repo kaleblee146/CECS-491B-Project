@@ -1,68 +1,72 @@
 # users/views.py
+import logging
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import login, authenticate
-from .forms import CustomUserCreationForm       # ← your custom form
 from django.contrib.auth.decorators import login_required
-from rest_framework.generics import ListAPIView
-from rest_framework.serializers import ModelSerializer
-from rest_framework.permissions import BasePermission, IsAuthenticated
-from .models import CustomUser, UserRoles
-from .serializers import RegisterSerializer
 from django.shortcuts import render, redirect
-import random
+from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import connections
-from django.http import HttpResponse
 
-# Correct Permission Class
-class IsAdminUserOnly(BasePermission):
-    def has_permission(self, request, view):
-        return (
-            request.user and 
-            request.user.is_authenticated and 
-            request.user.role.lower() == "admin"  # Convert to lowercase for consistency
-        )
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 
-# User Serializer
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = CustomUser  
-        fields = ['id',
-            'username',
-            'firstName',
-            'lastName',
-            'dob',
-            'email',
-            'phone',
-            'gender',
-            'age',
-            'units',
-            'weight',
-            'height',
-            'goals',
-            'bio',
-            'profile_picture',
-            'role']
+from .models import CustomUser
+from .serializers import RegisterSerializer, UserSerializer
+from .forms import CustomUserCreationForm
+from .permissions import IsAdminUserOnly
 
-# User List View
-class UserList(ListAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsAdminUserOnly]  # Require auth + admin
+# Configure logger
+logger = logging.getLogger(__name__)
 
-    def get(self, request, *args, **kwargs):
-        print(f"Authenticated user: {request.user}")  # Debugging output
-        return super().get(request, *args, **kwargs)
+# ===== WEB VIEWS (HTML TEMPLATES) =====
 
-# Register User API
+def welcome_view(request):
+    """Render the welcome page"""
+    return render(request, 'welcome.html')
+
+def home_view(request):
+    """Render the home dashboard"""
+    return render(request, "home_dynamic.html")
+
+def login_view(request):
+    """Handle user login and render login page"""
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # Changed from 'welcome' to 'home'
+    return render(request, 'login.html')
+
+def registration_view(request):
+    """Handle user registration and render registration page"""
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("home")
+    else:
+        form = CustomUserCreationForm()
+    return render(request, "register.html", {"form": form})
+
+def password_reset_view(request):
+    """Render password reset page"""
+    return render(request, "password_reset.html")
+
+# ===== API VIEWS (JSON RESPONSES) =====
+
 @api_view(['POST'])
 def register_user(request):
-    print("Incoming request data:", request.data)  # 👈 See exactly what's coming in
-
+    """API endpoint for user registration"""
+    logger.info(f"Registration request received: {request.data}")
+    
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
@@ -80,18 +84,18 @@ def register_user(request):
             'access': str(refresh.access_token),
         })
 
-    print("Serializer errors:", serializer.errors)  # 👈 See what went wrong
+    logger.warning(f"Registration validation failed: {serializer.errors}")
     return Response(serializer.errors, status=400)
 
-
-# Login User API
 @api_view(['POST'])
 def login_user(request):
+    """API endpoint for user login"""
     username = request.data.get('username')
     password = request.data.get('password')
 
     user = authenticate(username=username, password=password)
     if user is None:
+        logger.warning(f"Failed login attempt for username: {username}")
         return Response({'error': 'Invalid credentials'}, status=400)
 
     refresh = RefreshToken.for_user(user)
@@ -106,45 +110,18 @@ def login_user(request):
         'id': user.id
     })
 
-# Renders home.html
-def home_view(request):
-    return render(request, "home_dynamic.html")
+class UserList(ListAPIView):
+    """API endpoint to list all users (admin only)"""
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsAdminUserOnly]
 
-# Renders welcome.html
-def welcome_view(request):
-    return render(request, 'welcome.html')
-
-# Renders login.html
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('welcome')  # Redirect to welcome after login
-    return render(request, 'login.html')
-
-# Renders register.html
-def registration_view(request):
-    if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("home")  # Redirect to home after signup
-    else:
-        form = CustomUserCreationForm()
-    return render(request, "register.html", {"form": form})
-
-# Renders password_reset.html
-def password_reset_view(request):
-    return render(request, "password_reset.html")
-
-# Password reset
 @api_view(['POST'])
 def request_password_reset(request):
+    """API endpoint to request password reset"""
     email = request.data.get("email")
+    if not email:
+        return Response({"error": "Email is required"}, status=400)
 
     try:
         user = CustomUser.objects.get(email=email)
@@ -153,7 +130,7 @@ def request_password_reset(request):
         user.save()
 
         send_mail(
-            subject= "Your MoveMentor Password Reset Code:",
+            subject="Your MoveMentor Password Reset Code",
             message=f"Your verification code is {verif_code}",
             from_email="noreply@movementor.com",
             recipient_list=[email]
@@ -161,23 +138,27 @@ def request_password_reset(request):
 
         return Response({"message": "Verification code sent!"})
     except CustomUser.DoesNotExist:
+        logger.info(f"Password reset requested for non-existent email: {email}")
         return Response({"error": "Email not found"}, status=404)
+    except Exception as e:
+        logger.error(f"Error sending password reset email: {str(e)}")
+        return Response({"error": "Failed to send reset code"}, status=500)
 
-# Password reset confirmation
 @api_view(['POST'])
 def confirm_password_reset(request):
-    email = request.data.get("email").strip().lower()
-    code = request.data.get("code").strip()
+    """API endpoint to confirm password reset"""
+    email = request.data.get("email", "").strip().lower()
+    code = request.data.get("code", "").strip()
     new_password = request.data.get("new_password")
 
-    if not new_password:
-        return Response({"error": "Password cannot be empty."}, status=400)
+    if not all([email, code, new_password]):
+        return Response({"error": "Email, code and new password are required"}, status=400)
 
     try:
         user = CustomUser.objects.get(email=email)
 
         if user.reset_code != code:
-            return Response({"error": "Incorrect verification code."}, status=400)
+            return Response({"error": "Incorrect verification code"}, status=400)
 
         try:
             validate_password(new_password, user=user)
@@ -185,18 +166,28 @@ def confirm_password_reset(request):
             return Response({"error": e.messages}, status=400)
 
         user.set_password(new_password)
-        user.reset_code = None  # Clear the reset code after successful reset
+        user.reset_code = None  # Clear the reset code
         user.save()
 
         return Response({"message": "Password reset successfully!"})
 
     except CustomUser.DoesNotExist:
-        return Response({"error": "Invalid email."}, status=404)
-    
+        return Response({"error": "Invalid email"}, status=404)
+    except Exception as e:
+        logger.error(f"Error resetting password: {str(e)}")
+        return Response({"error": "Failed to reset password"}, status=500)
+
+# ===== HEALTH CHECK =====
 
 def dbtest(request):
+    """Health check endpoint for database connectivity"""
     try:
         connections['default'].cursor().execute('SELECT 1')
         return HttpResponse('DB OK')
     except Exception as e:
+        logger.error(f"Database connection error: {str(e)}")
         return HttpResponse(f'DB ERROR: {e}', status=500)
+
+def simple_health(request):
+    """Simple health check that doesn't require database access"""
+    return HttpResponse("OK")
