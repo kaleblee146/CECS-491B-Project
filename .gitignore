@@ -39,6 +39,7 @@ xcuserdata/
 
 # Elastic Beanstalk configs at the repo root (if any)
 .elasticbeanstalk/
+**/.elasticbeanstalk/
 
 # Test coverage / reports
 htmlcov/
