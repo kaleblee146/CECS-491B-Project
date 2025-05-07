@@ -85,9 +85,6 @@ MIDDLEWARE = [
     # Custom middleware
     'core.middleware.RequestLoggingMiddleware',
     
-    # Add HealthCheckMiddleware to bypass SSL for health checks
-    'backend.middleware.HealthCheckMiddleware',
-    
     # CORS
     "corsheaders.middleware.CorsMiddleware",
     
