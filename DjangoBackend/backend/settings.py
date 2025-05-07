@@ -42,7 +42,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 # SSL Configuration
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
 # Health check paths that should be exempt from SSL redirect
 HEALTH_CHECK_PATHS = ['/dbtest/', '/health/']
