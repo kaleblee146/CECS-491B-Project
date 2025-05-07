@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		04AB61542DA6E13800992D82 /* Exceptions for "MoveMentorApp" folder in "MoveMentorApp" target */ = {
+		03D8D5282DCB32DC00AB8D0A /* Exceptions for "MoveMentorApp" folder in "MoveMentorApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -43,7 +43,7 @@
 		04FE950D2DA37AF900CD8E68 /* MoveMentorApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				04AB61542DA6E13800992D82 /* Exceptions for "MoveMentorApp" folder in "MoveMentorApp" target */,
+				03D8D5282DCB32DC00AB8D0A /* Exceptions for "MoveMentorApp" folder in "MoveMentorApp" target */,
 			);
 			path = MoveMentorApp;
 			sourceTree = "<group>";

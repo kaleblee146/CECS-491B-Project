@@ -5,6 +5,8 @@ import UIKit
 import AVFoundation
 
 struct SettingsView: View {
+    @EnvironmentObject var session: UserSession
+    
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
     let items = [
@@ -35,7 +37,9 @@ struct SettingsView: View {
                     )
                 
                 Button(action: {
-                    // Logout Button
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            session.logout()
+                        }
                 }) {
                     Text("Logout")
                         .font(.headline)
@@ -98,6 +102,8 @@ struct SettingsView: View {
 
 //Preference Settings
 struct PreferencesView: View {
+    @EnvironmentObject var session: UserSession
+    
     @State private var allowNotifications = UserDefaults.standard.bool(forKey: "allowNotifications")
     @State private var autoTracking = UserDefaults.standard.bool(forKey: "autoTracking")
     @State private var privateProfile = UserDefaults.standard.bool(forKey: "privateProfile")
@@ -229,6 +235,8 @@ struct PreferencesView: View {
 }
 
 struct LanguagePickerView: View {
+    @EnvironmentObject var session: UserSession
+    
     @Binding var selectedLanguage: String
     @Environment(\.dismiss) var dismiss
     
@@ -266,6 +274,8 @@ struct LanguagePickerView: View {
 
 // Profile View
 struct ProfileView: View {
+    @EnvironmentObject var session: UserSession
+    
     @State private var username: String = "......."
     @State private var phone: String = "Please add a valid phone number"
     
@@ -285,7 +295,7 @@ struct ProfileView: View {
                 .padding(.top)
             
             // Username
-            SettingItem(title: "Username", subtitle: username) {
+            SettingItem(title: "Username", subtitle: session.username) {
                 isEditingUsername.toggle()
             }
             .sheet(isPresented: $isEditingUsername) {
@@ -322,7 +332,7 @@ struct ProfileView: View {
             }
             
             // Phone
-            SettingItem(title: "Phone", subtitle: phone) {
+            SettingItem(title: "Phone", subtitle: session.phone) {
                 isEditingPhone.toggle()
             }
             .sheet(isPresented: $isEditingPhone) {
@@ -400,6 +410,8 @@ struct ProfileView: View {
 }
 
 struct SettingItem: View {
+    @EnvironmentObject var session: UserSession
+    
     let title: String
     let subtitle: String
     let action: () -> Void
@@ -423,6 +435,8 @@ struct SettingItem: View {
 }
 
 struct NotificationSettingsView: View {
+    @EnvironmentObject var session: UserSession
+    
     @State private var emailNotifications: Bool = false
     @State private var pushNotifications: Bool = false
     @State private var smsNotifications: Bool = false
@@ -464,6 +478,8 @@ struct NotificationSettingsView: View {
 }
 // Data & Privacy View
 struct DataPrivacyView: View {
+    @EnvironmentObject var session: UserSession
+    
     @AppStorage("useLocation") private var useLocation = true
     @AppStorage("preciseLocation") private var preciseLocation = true
     @AppStorage("doNotSellInfo") private var doNotSellInfo = true
@@ -556,6 +572,8 @@ struct DataPrivacyView: View {
 
 // Camera Calibration View
 struct CameraCalibrationView: View {
+    @EnvironmentObject var session: UserSession
+    
     @Environment(\.dismiss) var dismiss
 
     @State private var calibrationSteps = [
@@ -641,6 +659,8 @@ struct CameraCalibrationView: View {
 
 //Camera Preview (Should work when ruuning app)
 struct CameraPreview: UIViewControllerRepresentable {
+    @EnvironmentObject var session: UserSession
+    
     func makeUIViewController(context: Context) -> some UIViewController {
         let controller = CameraViewController()
         return controller
@@ -650,6 +670,8 @@ struct CameraPreview: UIViewControllerRepresentable {
 }
 
 class CameraViewController: UIViewController {
+    @EnvironmentObject var session: UserSession
+    
     private var captureSession: AVCaptureSession?
 
     override func viewDidLoad() {
@@ -701,18 +723,20 @@ class CameraViewController: UIViewController {
 }
 // Appearance View
 struct AppearanceView: View {
+    @EnvironmentObject var session: UserSession
+    
     @AppStorage("darkMode") private var darkMode = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Appearance")
                 .font(.largeTitle)
-                .foregroundColor(.white)
+                .foregroundColor(darkMode ? .white : .black)
                 .bold()
 
             HStack {
                 Text("Enable Dark Mode")
-                    .foregroundColor(.white)
+                    .foregroundColor(darkMode ? .white : .black)
                 Spacer()
                 Toggle("", isOn: $darkMode)
                     .toggleStyle(SwitchToggleStyle(tint: Color.purple))
@@ -721,12 +745,17 @@ struct AppearanceView: View {
             Spacer()
         }
         .padding()
-        .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all))
+        .background(
+            (darkMode ? Color(hex: "#2A2E43") : Color.white)
+                .edgesIgnoringSafeArea(.all)
+        )
     }
 }
 
 // Terms of Service View
 struct TermsOfServiceView: View {
+    @EnvironmentObject var session: UserSession
+    
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -778,6 +807,8 @@ struct TermsOfServiceView: View {
 
 // FAQ View
 struct FAQView: View {
+    @EnvironmentObject var session: UserSession
+    
     @State private var expandedIndices: Set<Int> = []
 
     let faqs = [
@@ -835,6 +866,8 @@ struct FAQView: View {
 
 // Bug Reporting View
 struct BugReportView: View {
+    @EnvironmentObject var session: UserSession
+    
     @State private var bugDescription = ""
     @Environment(\.presentationMode) var presentationMode
 
@@ -869,6 +902,8 @@ struct BugReportView: View {
 
 // Delete Account View
 struct DeleteAccountView: View {
+    @EnvironmentObject var session: UserSession
+    
     @State private var showConfirmation = false
 
     var body: some View {

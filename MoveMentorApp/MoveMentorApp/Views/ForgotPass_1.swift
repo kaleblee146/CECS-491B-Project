@@ -16,8 +16,6 @@ struct ForgotPass_1: View{
     @State var emailMatch = false
     @State private var emailMessage = ""
     
-    private let exampleEmail = "username@gmail.com"
-    
     var body: some View{
         NavigationStack{
             VStack{
@@ -48,9 +46,8 @@ struct ForgotPass_1: View{
                 
                 
                 Button("CONTINUE"){
-                    checkEmail()
-                    if emailMatch{
-                        goNext = true
+                    Task {
+                        await checkEmail()
                     }
                 }
                 .font(Font.custom("Roboto_Condensed-Black", size: 18))
@@ -79,7 +76,7 @@ struct ForgotPass_1: View{
             .frame(width: 402, height: 869)
             .background(Color.navy)
             .navigationDestination(isPresented: $goNext){
-                ForgotPass_2()
+                ForgotPass_2(email: email)
             }
             .navigationDestination(isPresented: $cancel){
                 LoginView()
@@ -87,16 +84,39 @@ struct ForgotPass_1: View{
         }
         
     }
-    private func checkEmail(){
-        if email == exampleEmail{
-            emailMatch = true
-            
-        } else {
-            emailMatch = false
-            emailMessage = "The email entered does not match any email in our database"
+    private func checkEmail() async {
+            guard let url = URL(string: "http://192.168.1.18:8000/api/users/request-password-reset/") else {
+                emailMessage = "Invalid URL"
+                emailMatch = false
+                return
+            }
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+            let body = ["email": email]
+            request.httpBody = try? JSONEncoder().encode(body)
+
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                let decoded = try? JSONDecoder().decode([String: String].self, from: data)
+
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    emailMatch = true
+                    emailMessage = decoded?["message"] ?? "Verification code sent!"
+                    goNext = true
+                } else {
+                    emailMatch = false
+                    emailMessage = decoded?["error"] ?? "Something went wrong."
+                }
+            } catch {
+                emailMatch = false
+                emailMessage = "Network error. Try again later."
+            }
         }
     }
-}
+
 
     
 

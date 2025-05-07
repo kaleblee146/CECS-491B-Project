@@ -37,7 +37,11 @@ class NetworkManager {
         // 1) Construct URL
        // guard let url = URL(string: "https://www.movementor.app/register/") else {
         
-        guard let url = URL(string: "https://10.39.78.132:8000/api/register/") else {
+        guard let url = URL(string: "http://192.168.1.18:8000/api/register/") else {
+
+        //guard let url = URL(string: "http://127.0.0.1:8000/api/register/") else {
+        //guard let url = URL(string: "https://e4a5-2607-fb91-8823-90a0-3db4-904a-247d-7d8d.ngrok-free.app/api/login/") else {
+
             throw NetworkError.invalidURL
         }
         
@@ -110,10 +114,13 @@ class NetworkManager {
     // MARK: - Login User
     /// Logs in an existing user with username/password.
     func loginUser(username: String, password: String) async throws -> [String: Any] {
-        guard let url = URL(string: "https://10.39.78.132:8000/api/login/"
-) else {
-        //guard let url = URL(string: "http://localhost:8000/api/users/api/login/") else {
+        //guard let url = URL(string: "https://10.39.78.132:8000/api/login/"
+//) else {
+        guard let url = URL(string: "http://192.168.1.18:8000/api/login/") else {
+
+        //guard let url = URL(string: "http://127.0.0.1:8000/api/login/") else {
         //guard let url = URL(string: "https://www.movementor.app/login/") else {
+        //guard let url = URL(string: "https://e4a5-2607-fb91-8823-90a0-3db4-904a-247d-7d8d.ngrok-free.app/api/login/") else {
             throw NetworkError.invalidURL
         }
         
@@ -143,7 +150,9 @@ class NetworkManager {
     }
     
     func uploadProfileImage(image: UIImage, username: String) async throws {
-        guard let url = URL(string: "https://127.0.0.1:8000/api/upload-profile-picture/") else {
+        guard let url = URL(string: "http://192.168.1.18:8000/api/upload-profile-picture/") else {
+
+        //guard let url = URL(string: "https://127.0.0.1:8000/api/upload-profile-picture/") else {
             throw NetworkError.invalidURL
         }
 
@@ -204,6 +213,7 @@ class RegistrationData: ObservableObject {
 }
 
 class UserSession: ObservableObject {
+    @Published var isLoggedIn: Bool = true
     @Published var username: String = ""
     @Published var firstName: String = ""
     @Published var lastName: String = ""
@@ -218,6 +228,14 @@ class UserSession: ObservableObject {
     @Published var profileImage: Image? = nil
     @Published var rawProfileUIImage: UIImage? = nil
     @Published var profileImageURL: String = ""
+    
+    func logout() {
+            isLoggedIn = false
+            username = ""
+            phone = ""
+            // Optionally clear auth token
+            UserDefaults.standard.removeObject(forKey: "authToken")
+        }
 
 
 }
