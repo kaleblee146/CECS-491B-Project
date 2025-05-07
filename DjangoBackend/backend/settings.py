@@ -56,6 +56,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+
+    # Static files
+    "whitenoise.runserver_nostatic",  # first so runserver uses Whitenoise too
+    "django.contrib.staticfiles",
     "django.contrib.staticfiles",
 
     # Third-party apps
@@ -65,6 +69,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "channels",
+    "whitenoise.runserver_nostatic",
 
     # Project apps
     "backend.dash_app.apps.DashAppConfig",
@@ -81,6 +86,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # Security first
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware"     # whitenoise compression
     
     # Custom middleware
     'core.middleware.RequestLoggingMiddleware',
@@ -193,7 +199,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"  # or the Django builtin
+)
+WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -269,10 +278,17 @@ EMAIL_HOST_USER = 'noreply@movementor.com'  # Update or use env var
 EMAIL_HOST_PASSWORD = ''  # Use env var in production
 DEFAULT_FROM_EMAIL = 'MoveMentor <noreply@movementor.com>'
 
-# ─── HEALTH CHECK CONFIGURATION ────────────────────────────────────────────────
+# ─── HEALTH CHECK CONFIGURATION ─────────────────────────────────────────────────
 HEALTH_CHECK_SETTINGS = {
     'DB_TIMEOUT': 3,  # seconds
 }
 
-# ─── DEFAULT AUTO FIELD ──────────────────────────────────────────────────────
+# ─── DEFAULT AUTO FIELD ─────────────────────────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ─── STORAGES  ──────────────────────────────────────────────────────────────────
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    }
+}

@@ -1,28 +1,31 @@
-# Python caches & bytecode
+# --- Python & Django ---
 __pycache__/
 *.py[cod]
 *.pyo
+*.log
 
-# Virtual environments & env files
+# Virtual envs
 env/
 venv/
-.env
-.env.local
 
-# Git metadata
+# Collected static artefacts (always rebuilt in the image)
+DjangoBackend/staticfiles/
+
+# Local media/uploads (should never ship with the image)
+media/
+
+# Git & VCS
 .git/
 .gitignore
 
-# Docker tooling
+# Docker internals
 .dockerignore
+Dockerfile
 
-# Logs & coverage reports
-*.log
-htmlcov/
-coverage.xml
-*.egg-info/
-dist/
-build/
-
-# OS artifacts
+# macOS & IDEs
 .DS_Store
+.vscode/
+.idea/
+
+# Node (if ever added)
+node_modules/
