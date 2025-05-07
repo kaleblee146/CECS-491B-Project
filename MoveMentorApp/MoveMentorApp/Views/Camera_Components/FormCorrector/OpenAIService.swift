@@ -1,11 +1,8 @@
 import Foundation
 
-
 class OpenAIService {
     static let shared = OpenAIService()
-    private let apiKey = SecretsManager.shared.get("OPENAI_API_KEY")
-
-
+    private let apiKey = SecretsManager.shared.get("OPENAI_API_KEY") ?? ""
 
     func getFeedback(prompt: String) async throws -> String {
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
