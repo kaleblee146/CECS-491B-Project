@@ -3,8 +3,19 @@ services:
     build: .
     ports:
       - "80:8000"
+    
+    # Load variables from .env (AWS Elastic Beanstalk ships the file too)
+    env_file:
+      - .env             # can list more files if you wish
+
+    # Per‑container overrides or required values
     environment:
-      - DJANGO_SETTINGS_MODULE=backend.settings
-      - ALLOWED_HOSTS_EXTRA=green-env-usw1.us-west-1.elasticbeanstalk.com,localhost,127.0.0.1,green-env-usw1-new.us-west-1.elasticbeanstalk.com
-      - SECURE_SSL_REDIRECT=False
-    command: gunicorn backend.wsgi:application -b 0.0.0.0:8000 --timeout 120 --workers 3
+      DJANGO_SETTINGS_MODULE: backend.settings     # keep inside file
+      # Anything specified here will override the same key in .env
+      # ALLOWED_HOSTS_EXTRA and SECURE_SSL_REDIRECT now live in .env
+
+    command: >
+      gunicorn backend.wsgi:application
+        --bind 0.0.0.0:8000
+        --workers 3
+        --timeout 120

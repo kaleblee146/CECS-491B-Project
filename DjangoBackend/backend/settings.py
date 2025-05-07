@@ -84,7 +84,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # Security first
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware"     # whitenoise compression
+    "whitenoise.middleware.WhiteNoiseMiddleware",     # whitenoise compression
     
     # Custom middleware
     'core.middleware.RequestLoggingMiddleware',
