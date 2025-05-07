@@ -27,6 +27,8 @@ dist/
 
 # macOS
 .DS_Store
+Secrets.plist
+
 
 # AWS RDS private keys
 /AWS RDS/
