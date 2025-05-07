@@ -7,6 +7,6 @@ services:
       - "80:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=backend.settings
-      - ALLOWED_HOSTS_EXTRA=green-env-usw1.us-west-1.elasticbeanstalk.com,localhost,127.0.0.1
+      - ALLOWED_HOSTS_EXTRA=green-env-usw1.us-west-1.elasticbeanstalk.com,localhost,127.0.0.1,green-env-usw1-new.us-west-1.elasticbeanstalk.com
       - SECURE_SSL_REDIRECT=False
     command: gunicorn backend.wsgi:application -b 0.0.0.0:8000 --timeout 120 --workers 3
