@@ -1,6 +1,6 @@
 # users/serializers.py
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, BugReport
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -19,3 +19,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(password=password, **validated_data)
         print("User created with password hash:", user.password)
         return user
+    
+    class BugReportSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = BugReport
+            fields = ['id', 'user', 'description', 'submitted_at']
+            read_only_fields = ['id', 'submitted_at', 'user']

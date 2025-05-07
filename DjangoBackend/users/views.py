@@ -1,8 +1,10 @@
 # users/views.py
 import logging
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -15,7 +17,7 @@ from django.db import connections
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from .models import CustomUser
+from .models import CustomUser, BugReport
 from .serializers import RegisterSerializer, UserSerializer
 from .forms import CustomUserCreationForm
 from .permissions import IsAdminUserOnly
@@ -176,6 +178,15 @@ def confirm_password_reset(request):
     except Exception as e:
         logger.error(f"Error resetting password: {str(e)}")
         return Response({"error": "Failed to reset password"}, status=500)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def bug_report_view(request):
+    serializer = BugReportSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
 
 # ===== HEALTH CHECK =====
 

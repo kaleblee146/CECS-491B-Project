@@ -9,6 +9,7 @@ from .views import (
     home_view,
     password_reset_view,
     dbtest,
+    bug_report_view,
     simple_health,
 )
 
@@ -22,6 +23,7 @@ urlpatterns = [
     path("terms/", TemplateView.as_view(template_name="terms.html"), name="terms"),
     path("password-reset/", password_reset_view, name="password_reset"),
     path("dbtest/", dbtest, name="dbtest"),
+    path('api/bug-reports/', bug_report_view, name='bug-reports'),
     
     # Health check endpoint that doesn't require database access
     path("health/", simple_health, name="simple_health"),

@@ -853,6 +853,7 @@ struct BugReportView: View {
                 .padding()
 
             Button("Submit") {
+                submitBugReport()
                 presentationMode.wrappedValue.dismiss()
             }
             .foregroundColor(.white)
@@ -865,6 +866,22 @@ struct BugReportView: View {
         .padding()
         .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all))
     }
+
+func submitBugReport() {
+    guard let token = UserDefaults.standard.string(forKey: "jwtToken"),
+          let url = URL(string: "https://your-backend.com/api/bug-reports/") else { 
+        return 
+    }
+
+    let payload = ["message": bugDescription]
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+
+    URLSession.shared.dataTask(with: request).resume()
 }
 
 // Delete Account View
