@@ -1,13 +1,18 @@
 import os
 from pathlib import Path
-from datetime import timedelta  # JWT settings
+from datetime import timedelta
 
 # ─── BASE PATH ────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ─── SECURITY ──────────────────────────────────────────────────────────────────
-SECRET_KEY = "django-insecure-1a_uj6_vp)%%l5-dnfwt^q_h0a=lnnrp3gwkog8$zmrh&ze&!o"
+# ─── CORE SETTINGS ──────────────────────────────────────────────────────────────
 DEBUG = True  # Change to False in production!
+SECRET_KEY = "django-insecure-1a_uj6_vp)%%l5-dnfwt^q_h0a=lnnrp3gwkog8$zmrh&ze&!o"  # Change in production
+ROOT_URLCONF = "backend.urls"
+WSGI_APPLICATION = "backend.wsgi.application"
+ASGI_APPLICATION = "backend.routing.application"
+
+# ─── SECURITY ──────────────────────────────────────────────────────────────────
 ALLOWED_HOSTS = [
     "movementor.app",
     "www.movementor.app",
@@ -16,29 +21,36 @@ ALLOWED_HOSTS = [
     "ec2-52-53-157-43.us-west-1.compute.amazonaws.com",
     "localhost",
     "127.0.0.1",
-    #'green-env-usw1.us-west-1.elasticbeanstalk.com',
-    #'172.31.13.207',  # Current instance's private IP
-    # allow any host (for EB health-checks)
-    "*",
+    "green-env-usw1.us-west-1.elasticbeanstalk.com",
+    "green-env-usw1-new.us-west-1.elasticbeanstalk.com",
+    "*",  # Wildcard for EB health checks
 ]
-# allow extra hosts injected at deploy time
+
+# Add any extra hosts from environment variables
 extra_hosts = os.getenv("ALLOWED_HOSTS_EXTRA", "")
 if extra_hosts:
     ALLOWED_HOSTS += [h.strip() for h in extra_hosts.split(",") if h.strip()]
 
+# CSRF and SSL settings
 CSRF_TRUSTED_ORIGINS = [
     "https://movementor.app",
     "https://www.movementor.app",
     "https://movementor-blue.us-west-2.elasticbeanstalk.com",
+    "https://green-env-usw1.us-west-1.elasticbeanstalk.com",
+    "https://green-env-usw1-new.us-west-1.elasticbeanstalk.com",
 ]
-# Behind nginx terminating SSL:
+
+# SSL Configuration
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-# Optional—Django will redirect any HTTP → HTTPS if True.
 SECURE_SSL_REDIRECT = True
+
+# Health check paths that should be exempt from SSL redirect
+HEALTH_CHECK_PATHS = ['/dbtest/', '/health/']
+SECURE_SSL_REDIRECT_EXEMPT = HEALTH_CHECK_PATHS
 
 # ─── INSTALLED APPS ───────────────────────────────────────────────────────────
 INSTALLED_APPS = [
-    # Django contrib
+    # Django contrib apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,7 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Third‑party
+    # Third-party apps
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
@@ -54,7 +66,7 @@ INSTALLED_APPS = [
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "channels",
 
-    # Your apps
+    # Project apps
     "backend.dash_app.apps.DashAppConfig",
     "analytics",
     "core",
@@ -67,31 +79,31 @@ INSTALLED_APPS = [
 
 # ─── MIDDLEWARE ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
+    # Security first
     "django.middleware.security.SecurityMiddleware",
+    
+    # Custom middleware
     'core.middleware.RequestLoggingMiddleware',
-
-    # CORS (for API testing only—lock this down later!)
+    
+    # Add HealthCheckMiddleware to bypass SSL for health checks
+    'backend.middleware.HealthCheckMiddleware',
+    
+    # CORS
     "corsheaders.middleware.CorsMiddleware",
-
+    
+    # Django standard middleware
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-
-    # CSRF protection
     "django.middleware.csrf.CsrfViewMiddleware",
-
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
+    
     # Plotly Dash
     "django_plotly_dash.middleware.BaseMiddleware",
 ]
 
-# ─── URLS & TEMPLATES ─────────────────────────────────────────────────────────
-ROOT_URLCONF = "backend.urls"
-WSGI_APPLICATION = "backend.wsgi.application"
-ASGI_APPLICATION = "backend.routing.application"
-
+# ─── TEMPLATES ─────────────────────────────────────────────────────────────────
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -114,16 +126,27 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "movementor_django_db",
         "USER": "MoveMentor",
-        "PASSWORD": "mentorMove123!",
+        "PASSWORD": "mentorMove123!",  # Store in environment variable in production
         "HOST": "movementor-django-db.cfuoimgmmxni.us-west-1.rds.amazonaws.com",
         "PORT": "5432",
+        "CONN_MAX_AGE": 60,  # Keep connections alive for 60 seconds
+        "OPTIONS": {
+            "sslmode": "require",  # Enforce SSL for security
+        },
     }
 }
-# (Local Postgres block commented out below for reference)
 
-# ─── AUTHENTICATION & PASSWORDS ───────────────────────────────────────────────
+# ─── CACHES ─────────────────────────────────────────────────────────────────
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+# ─── AUTHENTICATION ─────────────────────────────────────────────────────────
 AUTH_USER_MODEL = "users.CustomUser"
 LOGIN_REDIRECT_URL = "/home"
+LOGOUT_REDIRECT_URL = "/"  # Redirect to homepage after logout
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -132,37 +155,56 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ─── INTERNATIONALIZATION ─────────────────────────────────────────────────────
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
-
-# ─── STATIC FILES ─────────────────────────────────────────────────────────────
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 # ─── REST FRAMEWORK & JWT ──────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",  # For browsable API
     ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/day",
+        "user": "1000/day",
+    },
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
 }
 
-# ─── CORS (FOR TESTING ONLY) ───────────────────────────────────────────────────
-CORS_ALLOW_ALL_ORIGINS = True  # switch to explicit whitelist in production
+# ─── CORS CONFIGURATION ───────────────────────────────────────────────────────
+CORS_ALLOW_ALL_ORIGINS = True  # Change to False in production
+# CORS_ALLOWED_ORIGINS = [
+#     "https://movementor.app",
+#     "https://www.movementor.app",
+#     "http://localhost:3000",
+# ]
+CORS_ALLOW_CREDENTIALS = True
+
+# ─── STATIC & MEDIA FILES ────────────────────────────────────────────────────
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # ─── CHANNELS (WEBSOCKETS) ─────────────────────────────────────────────────────
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
-        # For production you’d swap in Redis:
+        # For production use Redis:
         # "BACKEND": "channels_redis.core.RedisChannelLayer",
         # "CONFIG": {"hosts": [("redis-server-name", 6379)]},
     }
@@ -172,10 +214,68 @@ CHANNEL_LAYERS = {
 PLOTLY_DASH = {
     "serve_locally": True,
 }
+X_FRAME_OPTIONS = "SAMEORIGIN"  # Allow Dash iframes
 
-X_FRAME_OPTIONS = "SAMEORIGIN"  # allow Dash iframes
+# ─── INTERNATIONALIZATION ─────────────────────────────────────────────────────
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
 
-# ─── FINAL NOTES ───────────────────────────────────────────────────────────────
-# • DEBUG=False is mandatory in production.
-# • You can remove the local‑DB block entirely once you’re fully on RDS.
-# • Lock down CORS_ALLOW_ALL_ORIGINS before going live.
+# ─── LOGGING ─────────────────────────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'movementor': {  # Your custom logger
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+# ─── EMAIL SETTINGS ─────────────────────────────────────────────────────────────
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'  # Update with your SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'noreply@movementor.com'  # Update or use env var
+EMAIL_HOST_PASSWORD = ''  # Use env var in production
+DEFAULT_FROM_EMAIL = 'MoveMentor <noreply@movementor.com>'
+
+# ─── HEALTH CHECK CONFIGURATION ────────────────────────────────────────────────
+HEALTH_CHECK_SETTINGS = {
+    'DB_TIMEOUT': 3,  # seconds
+}
+
+# ─── DEFAULT AUTO FIELD ──────────────────────────────────────────────────────
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
