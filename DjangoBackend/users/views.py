@@ -201,4 +201,4 @@ def dbtest(request):
 
 def simple_health(request):
     """Simple health check that doesn't require database access"""
-    return HttpResponse("OK")
+    return HttpResponse("OK", content_type="text/plain")

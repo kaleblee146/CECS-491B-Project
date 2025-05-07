@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "green-env-usw1.us-west-1.elasticbeanstalk.com",
     "green-env-usw1-new.us-west-1.elasticbeanstalk.com",
+    ".elasticbeanstalk.com",
     "*",  # Wildcard for EB health checks
 ]
 
@@ -42,7 +43,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 # SSL Configuration
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = (os.getenv("SECURE_SSL_REDIRECT", "False").lower() in {"true", "1", "yes"})   
+#SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = (os.getenv("SECURE_SSL_REDIRECT", "False").lower() in {"true", "1", "yes"})
 
 # Health check paths that should be exempt from SSL redirect
 HEALTH_CHECK_PATHS = ['/dbtest/', '/health/']

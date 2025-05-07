@@ -1,6 +1,7 @@
 # backend/urls.py
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path('django_plotly_dash/', include('django_plotly_dash.urls')), # dash
     path('dash_app/', include('backend.dash_app.urls')),
+    path("health/", lambda r: JsonResponse({"status": "ok"})),
 ]
