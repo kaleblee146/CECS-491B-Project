@@ -1,27 +1,28 @@
 FROM python:3.12-slim
 
-# ---- environment ----
+# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=backend.settings  \
-    PATH="/usr/local/bin:$PATH"
+    DJANGO_SETTINGS_MODULE=backend.settings \
+    PATH="/usr/local/bin:$PATH" \
+    SECURE_SSL_REDIRECT=False
 
-# ---- work directory ----
+# Set working directory
 WORKDIR /app
 
-# ---- install dependencies ----
-COPY requirements.txt ./requirements.txt
+# Install dependencies
+COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
-# ---- copy source ----
-COPY DjangoBackend/ ./
+# Copy application code
+COPY . ./
 
-# ---- collect static assets ----
+# Generate static files
 RUN python manage.py collectstatic --noinput
 
-# ---- container port ----
+# Expose application port
 EXPOSE 8000
 
-# ---- runtime command ----
-CMD ["gunicorn", "backend.wsgi:application", "-b", "0.0.0.0:8000"]
+# Run application with Gunicorn
+CMD ["gunicorn", "backend.wsgi:application", "-b", "0.0.0.0:8000", "--timeout", "120", "--workers", "3"]
 # CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
