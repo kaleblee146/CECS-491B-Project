@@ -5,16 +5,13 @@
  It handles camera setup, frame processing, and communication with a delegate to provide captured images.
  The class also supports toggling between front and back cameras.
 */
-
 import AVFoundation
 import UIKit
 
-// MARK: - Delegate Protocol
 protocol VideoCaptureDelegate: AnyObject {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?)
 }
 
-// MARK: - Camera Manager
 class VideoCapture: NSObject {
     weak var delegate: VideoCaptureDelegate?
 
@@ -26,7 +23,7 @@ class VideoCapture: NSObject {
         captureSession.beginConfiguration()
         captureSession.sessionPreset = sessionPreset
 
-        guard let device = AVCaptureDevice.default(for: .video),
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
               let input = try? AVCaptureDeviceInput(device: device),
               captureSession.canAddInput(input) else {
             completion(false)
@@ -40,7 +37,6 @@ class VideoCapture: NSObject {
             videoOutput.alwaysDiscardsLateVideoFrames = true
             captureSession.addOutput(videoOutput)
 
-            // ✅ Fix the orientation natively
             if let connection = videoOutput.connection(with: .video),
                connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
@@ -63,7 +59,6 @@ class VideoCapture: NSObject {
     }
 }
 
-// MARK: - Frame Output
 extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
