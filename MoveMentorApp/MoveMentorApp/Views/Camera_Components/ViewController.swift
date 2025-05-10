@@ -80,7 +80,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
 
     private func setupCamera() {
         videoCapture.delegate = self
-        videoCapture.setUp(sessionPreset: .hd1280x720) { success in
+        videoCapture.setUp(sessionPreset: .high) { success in
             if success {
                 self.videoCapture.start()
             } else {
