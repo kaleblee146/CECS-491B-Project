@@ -37,7 +37,7 @@ class NetworkManager {
         // 1) Construct URL
        // guard let url = URL(string: "https://www.movementor.app/register/") else {
         
-        guard let url = URL(string: "http://192.168.1.18:8000/api/register/") else {
+        guard let url = URL(string: "https://e2a5-2607-fb91-8885-d23e-882-e1f3-3c8b-f918.ngrok-free.app/api/register/") else {
 
         //guard let url = URL(string: "http://127.0.0.1:8000/api/register/") else {
         //guard let url = URL(string: "https://e4a5-2607-fb91-8823-90a0-3db4-904a-247d-7d8d.ngrok-free.app/api/login/") else {
@@ -116,7 +116,7 @@ class NetworkManager {
     func loginUser(username: String, password: String) async throws -> [String: Any] {
         //guard let url = URL(string: "https://10.39.78.132:8000/api/login/"
 //) else {
-        guard let url = URL(string: "http://192.168.1.18:8000/api/login/") else {
+        guard let url = URL(string: "https://e2a5-2607-fb91-8885-d23e-882-e1f3-3c8b-f918.ngrok-free.app/api/login/") else {
 
         //guard let url = URL(string: "http://127.0.0.1:8000/api/login/") else {
         //guard let url = URL(string: "https://www.movementor.app/login/") else {
@@ -150,7 +150,7 @@ class NetworkManager {
     }
     
     func uploadProfileImage(image: UIImage, username: String) async throws {
-        guard let url = URL(string: "http://192.168.1.18:8000/api/upload-profile-picture/") else {
+        guard let url = URL(string: "https://e2a5-2607-fb91-8885-d23e-882-e1f3-3c8b-f918.ngrok-free.app/api/upload-profile-picture/") else {
 
         //guard let url = URL(string: "https://127.0.0.1:8000/api/upload-profile-picture/") else {
             throw NetworkError.invalidURL

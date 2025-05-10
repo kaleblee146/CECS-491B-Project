@@ -85,7 +85,7 @@ struct ForgotPass_1: View{
         
     }
     private func checkEmail() async {
-            guard let url = URL(string: "http://192.168.1.18:8000/api/users/request-password-reset/") else {
+            guard let url = URL(string: "https://e2a5-2607-fb91-8885-d23e-882-e1f3-3c8b-f918.ngrok-free.app/api/users/request-password-reset/") else {
                 emailMessage = "Invalid URL"
                 emailMatch = false
                 return

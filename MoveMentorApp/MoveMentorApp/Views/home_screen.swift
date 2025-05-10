@@ -147,12 +147,20 @@ struct HomeScreen: View {
                     VStack(spacing: 24) {
                         NavigationLink(destination: WorkoutDetailPage(workoutTitle: "Chest Workout", exercises: ["Push Ups", "Bench Press", "Chest Fly"])) {
                             WorkoutCard(imageName: "chest_workout", title: "Today's workout", subtitle: "Chest")
+                            
+
+                            
+                            
                         }
                         NavigationLink(destination: WorkoutDetailPage(workoutTitle: "Quads & Deltoids", exercises: ["Squats", "Leg Press", "Shoulder Press"])) {
                             WorkoutCard(imageName: "quad_workout", title: "Quads", subtitle: "7 Exercises", difficulty: "Easy")
+                           
+
                         }
                         NavigationLink(destination: WorkoutDetailPage(workoutTitle: "Push up Routine", exercises: ["Standard Push-ups", "Diamond Push-ups", "Incline Push-ups"])) {
                             WorkoutCard(imageName: "push_up", title: "Push up Routine", subtitle: "12 Exercises", difficulty: "Medium")
+                            
+
                         }
                     }
                     .padding(.horizontal, 16)
@@ -287,25 +295,50 @@ struct BottomIcon: View {
 
 // Workout Detail Page View
 struct WorkoutDetailPage: View {
+    @State private var goToCamera = false
     var workoutTitle: String
     var exercises: [String]
     
+    
     var body: some View {
-        VStack {
-            Text(workoutTitle)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .padding(.top, 16)
-            
-            List(exercises, id: \.self) { exercise in
-                Text(exercise)
-                    .font(.system(size: 18, weight: .medium))
+        
+        NavigationStack{
+            VStack {
+                Text(workoutTitle)
+                    .font(.largeTitle)
                     .foregroundColor(.white)
+                    .padding(.top, 16)
+                
+                List(exercises, id: \.self) { exercise in
+                    Text(exercise)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.white)
+                }
+                .background(Color.black.edgesIgnoringSafeArea(.all))
+                
+                Button("Start Workout"){
+                    goToCamera = true
+                    
+                }
+                .font(Font.custom("Roboto_Condensed-Black", size: 18))
+                .frame(width: 164, height: 60)
+                .background(Color.magenta)
+                .foregroundColor(.white)
+                .cornerRadius(15)
+                .buttonStyle(BorderlessButtonStyle())
+                
+                NavigationLink(destination: CameraView(), isActive: $goToCamera ){
+                    EmptyView()
+                }
+                .hidden()
+
             }
-            .background(Color.black.edgesIgnoringSafeArea(.all))
+        }
+                
+            
         }
     }
-}
+
 
 
 //Preview
