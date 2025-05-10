@@ -354,6 +354,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
                 DispatchQueue.main.async {
                     self.feedbackLabel.text = line + "."
                 }
+                self.curlAngles.removeAll()
             } catch {
                 print("OpenAI feedback error: \(error)")
             }
@@ -361,14 +362,34 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     }
 
     // MARK: - VideoCaptureDelegate
-    func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
-        guard !isPaused,
-              let pixelBuffer = pixelBuffer,
-              let cgImage = pixelBuffer.toCGImage() else { return }
+    // Add this at the top of your class (if it's not there yet)
+var lastInferenceTime: CFTimeInterval = 0
 
-        self.lastFrame = cgImage
-        poseNet.predict(cgImage)
+// Then replace this method:
+func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
+    guard !isPaused,
+          let pixelBuffer = pixelBuffer,
+          let cgImage = pixelBuffer.toCGImage() else { return }
+
+    // Throttle inference to avoid memory and performance issues (e.g. 3 FPS)
+    let now = CACurrentMediaTime()
+    if now - lastInferenceTime < 0.3 { return }
+    lastInferenceTime = now
+
+    // Assign only temporarily to avoid memory bloat
+    self.lastFrame = cgImage
+
+    // Run prediction on background thread
+    DispatchQueue.global(qos: .userInitiated).async {
+        self.poseNet.predict(cgImage)
+        
+        // Optionally clear the image reference to free memory
+        DispatchQueue.main.async {
+            self.lastFrame = nil
+        }
     }
+}
+
 
     // MARK: - PoseNetDelegate
     func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
