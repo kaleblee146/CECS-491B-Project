@@ -90,7 +90,7 @@ struct SettingsView: View {
         case "Terms of Service": TermsOfServiceView()
         case "FAQ": FAQView()
         case "Report a Bug": BugReportView()
-        case "Delete Account": DeleteAccountView()
+        //case "Delete Account": DeleteAccountView()
         default: EmptyView()
         }
     }
@@ -837,21 +837,21 @@ struct FAQView: View {
 struct BugReportView: View {
     @State private var bugDescription = ""
     @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         VStack {
             Text("Report a Bug")
                 .font(.largeTitle)
                 .foregroundColor(.white)
                 .bold()
-
+            
             TextEditor(text: $bugDescription)
                 .frame(height: 200)
                 .background(Color.black.opacity(0.3))
                 .cornerRadius(10)
                 .foregroundColor(.black)
                 .padding()
-
+            
             Button("Submit") {
                 submitBugReport()
                 presentationMode.wrappedValue.dismiss()
@@ -860,73 +860,74 @@ struct BugReportView: View {
             .padding()
             .background(Color.pink)
             .cornerRadius(10)
-
+            
             Spacer()
         }
         .padding()
         .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all))
     }
-
-func submitBugReport() {
-    guard let token = UserDefaults.standard.string(forKey: "jwtToken"),
-          let url = URL(string: "https://your-backend.com/api/bug-reports/") else { 
-        return 
+    
+    func submitBugReport() {
+        guard let token = UserDefaults.standard.string(forKey: "jwtToken"),
+              let url = URL(string: "https://your-backend.com/api/bug-reports/") else {
+            return
+        }
+        
+        let payload = ["message": bugDescription]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+        
+        URLSession.shared.dataTask(with: request).resume()
     }
-
-    let payload = ["message": bugDescription]
-
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
-
-    URLSession.shared.dataTask(with: request).resume()
-}
-
-// Delete Account View
-struct DeleteAccountView: View {
-    @State private var showConfirmation = false
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Delete Account")
-                .font(.largeTitle)
+    
+    // Delete Account View
+    struct DeleteAccountView: View {
+        @State private var showConfirmation = false
+        
+        var body: some View {
+            VStack(spacing: 20) {
+                Text("Delete Account")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .bold()
+                
+                Text("This action is irreversible. Are you sure you want to delete your account?")
+                    .foregroundColor(.gray)
+                
+                Button("Delete My Account") {
+                    showConfirmation = true
+                }
+                .alert(isPresented: $showConfirmation) {
+                    Alert(
+                        title: Text("Are you sure?"),
+                        message: Text("Your account will be permanently deleted."),
+                        primaryButton: .destructive(Text("Delete")) {
+                            // Handle delete
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
                 .foregroundColor(.white)
-                .bold()
-
-            Text("This action is irreversible. Are you sure you want to delete your account?")
-                .foregroundColor(.gray)
-
-            Button("Delete My Account") {
-                showConfirmation = true
+                .padding()
+                .background(Color.red)
+                .cornerRadius(10)
+                
+                Spacer()
             }
-            .alert(isPresented: $showConfirmation) {
-                Alert(
-                    title: Text("Are you sure?"),
-                    message: Text("Your account will be permanently deleted."),
-                    primaryButton: .destructive(Text("Delete")) {
-                        // Handle delete
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
-            .foregroundColor(.white)
             .padding()
-            .background(Color.red)
-            .cornerRadius(10)
-
-            Spacer()
+            .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all))
         }
-        .padding()
-        .background(Color(hex: "#2A2E43").edgesIgnoringSafeArea(.all))
     }
-}
-
-
-// Preview
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView()
+    
+    
+    // Preview
+    struct SettingsView_Previews: PreviewProvider {
+        static var previews: some View {
+            SettingsView()
+        }
     }
 }
