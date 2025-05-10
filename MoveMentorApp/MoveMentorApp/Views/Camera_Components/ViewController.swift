@@ -268,7 +268,8 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         bubble.setContentHuggingPriority(.required, for: .vertical)
         bubble.setContentCompressionResistancePriority(.required, for: .vertical)
         bubble.translatesAutoresizingMaskIntoConstraints = false
-        bubble.padding(top: 10, left: 16, bottom: 10, right: 16)
+        bubble.textInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16) 
+
 
         let container = UIStackView(arrangedSubviews: [bubble])
         container.axis = .horizontal
