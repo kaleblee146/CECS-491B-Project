@@ -248,19 +248,20 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         addMessage(text, isUser: true)
         messageField.text = ""
 
-        Task 
+        Task {
             do {
                 let reply = try await OpenAIService.shared.getFeedback(prompt: text)
                 DispatchQueue.main.async {
                     self.addMessage(reply, isUser: false)
                 }
             } catch {
-                print("❌ GPT Error:", error)
                 DispatchQueue.main.async {
                     self.addMessage("⚠️ \(error.localizedDescription)", isUser: false)
                 }
             }
         }
+    }
+
 
     private func addMessage(_ text: String, isUser: Bool) {
         let bubble = PaddingLabel()
