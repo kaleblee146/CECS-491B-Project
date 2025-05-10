@@ -371,24 +371,17 @@ func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffe
           let pixelBuffer = pixelBuffer,
           let cgImage = pixelBuffer.toCGImage() else { return }
 
-    // Throttle inference to avoid memory and performance issues (e.g. 3 FPS)
     let now = CACurrentMediaTime()
     if now - lastInferenceTime < 0.3 { return }
     lastInferenceTime = now
 
-    // Assign only temporarily to avoid memory bloat
     self.lastFrame = cgImage
 
-    // Run prediction on background thread
     DispatchQueue.global(qos: .userInitiated).async {
         self.poseNet.predict(cgImage)
-        
-        // Optionally clear the image reference to free memory
-        DispatchQueue.main.async {
-            self.lastFrame = nil
-        }
     }
 }
+
 
 
     // MARK: - PoseNetDelegate
