@@ -20,8 +20,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         print("User created with password hash:", user.password)
         return user
     
-    class BugReportSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = BugReport
-            fields = ['id', 'user', 'description', 'submitted_at']
-            read_only_fields = ['id', 'submitted_at', 'user']
+class BugReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BugReport
+        fields = ['id', 'user', 'description', 'submitted_at']
+        read_only_fields = ['id', 'submitted_at', 'user']
