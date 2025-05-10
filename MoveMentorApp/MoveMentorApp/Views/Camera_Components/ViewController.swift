@@ -253,14 +253,14 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
                 let reply = try await OpenAIService.shared.getFeedback(prompt: text)
                 DispatchQueue.main.async {
                     self.addMessage(reply, isUser: false)
-            }
-        } catch {
-            print("❌ GPT Error:", error)
-            DispatchQueue.main.async {
-                self.addMessage("⚠️ \(error.localizedDescription)", isUser: false)
+                }
+            } catch {
+                print("❌ GPT Error:", error)
+                DispatchQueue.main.async {
+                    self.addMessage("⚠️ \(error.localizedDescription)", isUser: false)
+                }
             }
         }
-    }
 
     private func addMessage(_ text: String, isUser: Bool) {
         let bubble = PaddingLabel()
@@ -268,7 +268,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         bubble.numberOfLines = 0
         bubble.font = .systemFont(ofSize: 16)
         bubble.textColor = isUser ? .white : .black
-        bubble.backgroundColor = isUser ? UIColor.systemBlue : UIColor(white: 0.9, alpha: .45)
+        bubble.backgroundColor = isUser ? UIColor.systemBlue : UIColor(white: 0.9, alpha: 0.45)
         bubble.layer.cornerRadius = 18
         bubble.layer.masksToBounds = true
         bubble.setContentHuggingPriority(.required, for: .vertical)
