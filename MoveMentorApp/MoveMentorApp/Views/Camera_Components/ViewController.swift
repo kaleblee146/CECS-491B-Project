@@ -398,22 +398,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         }
     }
 }
-extension UILabel {
-    func padding(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) {
-        let insets = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
-        objc_setAssociatedObject(self, &paddingKey, insets, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-    }
 
-    open override func drawText(in rect: CGRect) {
-        if let insets = objc_getAssociatedObject(self, &paddingKey) as? UIEdgeInsets {
-            super.drawText(in: rect.inset(by: insets))
-        } else {
-            super.drawText(in: rect)
-        }
-    }
-}
-
-private var paddingKey: UInt8 = 0
 
 class PaddingLabel: UILabel {
     var textInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
