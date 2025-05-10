@@ -374,7 +374,7 @@ func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffe
           let cgImage = pixelBuffer.toCGImage() else { return }
 
     let now = CACurrentMediaTime()
-    if now - lastInferenceTime < 0.15 { return } // ~6 FPS throttle
+    if now - lastInferenceTime < 0.05 { return } // ~6 FPS throttle
     lastInferenceTime = now
 
     self.lastFrame = cgImage
