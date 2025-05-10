@@ -257,7 +257,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     }
 
     private func addMessage(_ text: String, isUser: Bool) {
-        let bubble = UILabel()
+        let bubble = PaddingLabel()
         bubble.text = text
         bubble.numberOfLines = 0
         bubble.font = .systemFont(ofSize: 16)
@@ -414,3 +414,21 @@ extension UILabel {
 }
 
 private var paddingKey: UInt8 = 0
+
+class PaddingLabel: UILabel {
+    var textInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: textInsets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + textInsets.left + textInsets.right,
+                      height: size.height + textInsets.top + textInsets.bottom)
+    }
+
+    override var bounds: CGRect {
+        didSet { preferredMaxLayoutWidth = bounds.width - textInsets.left - textInsets.right }
+    }
+}
