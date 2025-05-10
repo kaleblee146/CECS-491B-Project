@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     "green-env-usw1.us-west-1.elasticbeanstalk.com",
     "green-env-usw1-new.us-west-1.elasticbeanstalk.com",
     ".elasticbeanstalk.com",
+    ".ngrok.app",
     "*",  # Wildcard for EB health checks
 ]
 
@@ -39,6 +40,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://movementor-blue.us-west-2.elasticbeanstalk.com",
     "https://green-env-usw1.us-west-1.elasticbeanstalk.com",
     "https://green-env-usw1-new.us-west-1.elasticbeanstalk.com",
+    "https://*.ngrok.app"
 ]
 
 # SSL Configuration
