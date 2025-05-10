@@ -12,6 +12,9 @@ import SwiftUI
 
 class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, VideoCaptureDelegate {
     
+    var lastInferenceTime: CFTimeInterval = 0
+    private let predictionQueue = DispatchQueue(label: "posePredictionQueue")
+    
     var poseImageView: PoseImageView!
     var poseNet: PoseNet!
     let poseBuilder = PoseBuilder()
@@ -362,25 +365,32 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     }
 
     // MARK: - VideoCaptureDelegate
-    // Add this at the top of your class (if it's not there yet)
-var lastInferenceTime: CFTimeInterval = 0
+    
 
-// Then replace this method:
+// MARK: - VideoCaptureDelegate
 func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
     guard !isPaused,
           let pixelBuffer = pixelBuffer,
           let cgImage = pixelBuffer.toCGImage() else { return }
 
     let now = CACurrentMediaTime()
-    if now - lastInferenceTime < 0.033 { return }
+    if now - lastInferenceTime < 0.15 { return } // ~6 FPS throttle
     lastInferenceTime = now
 
     self.lastFrame = cgImage
 
-    DispatchQueue.global(qos: .userInitiated).async {
+    predictionQueue.async { [weak self] in
+        guard let self = self else { return }
         self.poseNet.predict(cgImage)
+
+        // Optional: free up memory
+        DispatchQueue.main.async {
+            self.lastFrame = nil
+        }
     }
 }
+
+
 
 
 

@@ -29,22 +29,22 @@ class PoseNet {
     }
 
     func predict(_ image: CGImage) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let input = PoseNetInput(image: image, size: self.modelInputSize)
+        let input = PoseNetInput(image: image, size: self.modelInputSize)
 
-            guard let prediction = try? self.poseNetMLModel.prediction(from: input) else {
-                return
-            }
+        guard let prediction = try? self.poseNetMLModel.prediction(from: input) else {
+            print("❌ Prediction failed")
+            return
+        }
 
-            let output = PoseNetOutput(
-                prediction: prediction,
-                modelInputSize: self.modelInputSize,
-                modelOutputStride: self.outputStride
-            )
+        let output = PoseNetOutput(
+            prediction: prediction,
+            modelInputSize: self.modelInputSize,
+            modelOutputStride: self.outputStride
+        )
 
-            DispatchQueue.main.async {
-                self.delegate?.poseNet(self, didPredict: output) // ✅ fixed: use correct variable
-            }
+        DispatchQueue.main.async {
+            self.delegate?.poseNet(self, didPredict: output)
         }
     }
+
 }
