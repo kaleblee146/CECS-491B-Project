@@ -24,13 +24,25 @@ class VideoCapture: NSObject {
         captureSession.sessionPreset = sessionPreset
 
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-              let input = try? AVCaptureDeviceInput(device: device),
-              captureSession.canAddInput(input) else {
+            let input = try? AVCaptureDeviceInput(device: device),
+            captureSession.canAddInput(input) else {
             completion(false)
             return
         }
 
         captureSession.addInput(input)
+
+        // 🔧 Force 60 FPS frame duration
+        if device.activeFormat.videoSupportedFrameRateRanges.contains(where: { $0.maxFrameRate >= 60 }) {
+            do {
+                try device.lockForConfiguration()
+                device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 60)
+                device.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 60)
+                device.unlockForConfiguration()
+            } catch {
+                print("⚠️ Could not lock camera configuration: \(error)")
+            }
+        }
 
         if captureSession.canAddOutput(videoOutput) {
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
@@ -38,7 +50,7 @@ class VideoCapture: NSObject {
             captureSession.addOutput(videoOutput)
 
             if let connection = videoOutput.connection(with: .video),
-               connection.isVideoOrientationSupported {
+            connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
             }
         } else {
@@ -49,6 +61,8 @@ class VideoCapture: NSObject {
         captureSession.commitConfiguration()
         completion(true)
     }
+
+
 
     func start() {
         captureSession.startRunning()

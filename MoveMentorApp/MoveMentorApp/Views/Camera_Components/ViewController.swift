@@ -80,7 +80,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
 
     private func setupCamera() {
         videoCapture.delegate = self
-        videoCapture.setUp(sessionPreset: .high) { success in
+        videoCapture.setUp(sessionPreset: .hd1280x720) { success in
             if success {
                 self.videoCapture.start()
             } else {
@@ -372,7 +372,7 @@ func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffe
           let cgImage = pixelBuffer.toCGImage() else { return }
 
     let now = CACurrentMediaTime()
-    if now - lastInferenceTime < 30 { return }
+    if now - lastInferenceTime < 0.033 { return }
     lastInferenceTime = now
 
     self.lastFrame = cgImage
