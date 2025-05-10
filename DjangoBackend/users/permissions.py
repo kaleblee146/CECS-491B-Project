@@ -5,7 +5,7 @@ class IsAdminUser(BasePermission):
     Allows access only to admin users.
     """
     def has_permission(self, request, view):
-        return hasattr(request.user, "role") and request.user.role == "ADMIN"
+        return hasattr(request.user, "role") and request.user.role == "Admin"
 
 # Alternative implementation for case-insensitive role checking
 class IsAdminUserOnly(BasePermission):

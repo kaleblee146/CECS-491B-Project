@@ -1,5 +1,6 @@
 # users/views.py
 import logging
+import random
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -18,7 +19,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from .models import CustomUser, BugReport
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, BugReportSerializer
 from .forms import CustomUserCreationForm
 from .permissions import IsAdminUserOnly
 

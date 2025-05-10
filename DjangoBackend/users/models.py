@@ -26,6 +26,7 @@ class CustomUser(AbstractUser):
         choices=UserRoles.choices, 
         default=UserRoles.FREE
     )
+    reset_code = models.CharField(max_length=6, blank=True, null=True)
 
     def __str__(self):
         return f"{self.username} ({self.role})"
