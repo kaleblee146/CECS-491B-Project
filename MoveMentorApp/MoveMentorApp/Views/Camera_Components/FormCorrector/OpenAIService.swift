@@ -25,10 +25,22 @@ class OpenAIService {
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+        let prettyData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
+        let prettyString = String(data: prettyData, encoding: .utf8) {
+            print("🔍 OpenAI Response:\n\(prettyString)")
+        } else {
+            print("⚠️ Received non-JSON response: \(String(data: data, encoding: .utf8) ?? "nil")")
+        }
+
+       
         let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
         return decoded.choices.first?.message.content ?? "No feedback available."
     }
+
 }
 
 struct OpenAIResponse: Codable {
