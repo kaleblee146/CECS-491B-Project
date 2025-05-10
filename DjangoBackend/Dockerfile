@@ -25,6 +25,9 @@ RUN rm -rf "$STATIC_ROOT" \
 # Expose application port
 EXPOSE 8000
 
+# Migrate changes
+RUN python manage.py migrate
+
 # Run application with Gunicorn
 CMD ["gunicorn", "backend.wsgi:application", "-b", "0.0.0.0:8000", "--timeout", "120", "--workers", "3"]
 # CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
