@@ -257,24 +257,40 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     }
 
     private func addMessage(_ text: String, isUser: Bool) {
-        let label = UILabel()
-        label.text = text
-        label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 16)
-        label.textColor = isUser ? .white : .black
-        label.backgroundColor = isUser ? .systemPink : UIColor.systemGray5
-        label.layer.cornerRadius = 14
-        label.layer.masksToBounds = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.setContentHuggingPriority(.required, for: .vertical)
-        label.textAlignment = .left
+        let bubble = UILabel()
+        bubble.text = text
+        bubble.numberOfLines = 0
+        bubble.font = .systemFont(ofSize: 16)
+        bubble.textColor = isUser ? .white : .black
+        bubble.backgroundColor = isUser ? UIColor.systemBlue : UIColor(white: 0.9, alpha: 1.0)
+        bubble.layer.cornerRadius = 18
+        bubble.layer.masksToBounds = true
+        bubble.setContentHuggingPriority(.required, for: .vertical)
+        bubble.setContentCompressionResistancePriority(.required, for: .vertical)
+        bubble.translatesAutoresizingMaskIntoConstraints = false
+        bubble.padding(top: 10, left: 16, bottom: 10, right: 16)
 
-        messageStack.addArrangedSubview(label)
+        let container = UIStackView(arrangedSubviews: [bubble])
+        container.axis = .horizontal
+        container.alignment = .leading
+        container.distribution = .fill
+        container.spacing = 4
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        if isUser {
+            container.alignment = .trailing
+            container.addArrangedSubview(UIView()) // push bubble to right
+        } else {
+            container.insertArrangedSubview(UIView(), at: 0) // push bubble to left
+        }
+
+        messageStack.addArrangedSubview(container)
+
         scrollView.layoutIfNeeded()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            let bottomOffset = CGPoint(x: 0, y: self.scrollView.contentSize.height - self.scrollView.bounds.height + self.scrollView.contentInset.bottom)
-            self.scrollView.setContentOffset(bottomOffset, animated: true)
+            let offset = CGPoint(x: 0, y: self.scrollView.contentSize.height - self.scrollView.bounds.height + self.scrollView.contentInset.bottom)
+            self.scrollView.setContentOffset(offset, animated: true)
         }
     }
 
@@ -382,3 +398,19 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         }
     }
 }
+extension UILabel {
+    func padding(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) {
+        let insets = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+        objc_setAssociatedObject(self, &paddingKey, insets, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+
+    open override func drawText(in rect: CGRect) {
+        if let insets = objc_getAssociatedObject(self, &paddingKey) as? UIEdgeInsets {
+            super.drawText(in: rect.inset(by: insets))
+        } else {
+            super.drawText(in: rect)
+        }
+    }
+}
+
+private var paddingKey: UInt8 = 0
