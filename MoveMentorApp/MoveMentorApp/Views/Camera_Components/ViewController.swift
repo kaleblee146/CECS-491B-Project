@@ -372,7 +372,7 @@ func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffe
           let cgImage = pixelBuffer.toCGImage() else { return }
 
     let now = CACurrentMediaTime()
-    if now - lastInferenceTime < 0.033 { return }
+    if now - lastInferenceTime < 30 { return }
     lastInferenceTime = now
 
     self.lastFrame = cgImage
