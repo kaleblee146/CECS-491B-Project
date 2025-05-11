@@ -8,33 +8,13 @@
 import SwiftUI
 
 struct CameraView: View {
-    @State private var goToSettings = false
-
     var body: some View {
         ZStack {
             CameraUIView()
                 .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        goToSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(.white)
-                            .padding()
-                    }
-                }
-                Spacer()
-            }
         }
         .background(Color.black)
         .edgesIgnoringSafeArea(.all)
-        .fullScreenCover(isPresented: $goToSettings) {
-            ConfigurationView()
-        }
     }
 }
 
@@ -47,7 +27,7 @@ struct CameraUIView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: ViewController, context: Context) {}
 }
 
-// Simple placeholder settings screen
+// You can also delete or keep this if you want to reuse ConfigurationView later
 struct ConfigurationView: View {
     var body: some View {
         ZStack {
