@@ -457,6 +457,7 @@ func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffe
             modelInputSize: predictions.modelInputSize
         ),
         let frame = self.lastFrame else { return }
+        self.lastFrame = nil
 
         DispatchQueue.main.async {
             self.poseImageView.show(poses: [pose], on: frame)
