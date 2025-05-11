@@ -12,6 +12,7 @@ import SwiftUI
 
 class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, VideoCaptureDelegate {
     
+    var originalY: CGFloat = 0
     var lastInferenceTime: CFTimeInterval = 0
     private let predictionQueue = DispatchQueue(label: "posePredictionQueue")
     
@@ -37,7 +38,8 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     var closeButton: UIButton!
 
     var repCount = 0
-    var isCurling = false
+    var isCurlingLeft = false
+    var isCurlingRight = false
     var isPaused = false
     var curlAngles: [CGFloat] = []
     var feedbackTimer: Timer?
@@ -60,6 +62,8 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         startFeedbackTimer()
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange), name: UIResponder.keyboardWillHideNotification, object: nil)
+
     }
 
     private func startFeedbackTimer() {
@@ -271,8 +275,10 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         bubble.text = text
         bubble.numberOfLines = 0
         bubble.font = .systemFont(ofSize: 16)
-        bubble.textColor = isUser ? .white : .black
-        bubble.backgroundColor = isUser ? UIColor.systemBlue : UIColor(white: 0.9, alpha: 0.45)
+        bubble.textColor = isUser 
+        bubble.backgroundColor = isUser 
+            ? UIColor(red: 228/255, green: 68/255, blue: 124/255, alpha: 1.0)  // User: pinkish red
+            : UIColor(red: 102/255, green: 94/255, blue: 255/255, alpha: 1.0)  // AI: indigo-blue
         bubble.layer.cornerRadius = 18
         bubble.layer.masksToBounds = true
         bubble.setContentHuggingPriority(.required, for: .vertical)
@@ -317,8 +323,17 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
 
     @objc private func keyboardWillChange(notification: Notification) {
         guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        view.frame.origin.y = keyboardFrame.origin.y >= UIScreen.main.bounds.height ? 0 : -keyboardFrame.height + 60
+        let isShowing = keyboardFrame.origin.y < UIScreen.main.bounds.height
+
+        if originalY == 0 {
+            originalY = self.view.frame.origin.y
+        }
+
+        UIView.animate(withDuration: 0.25) {
+            self.view.frame.origin.y = isShowing ? self.originalY - keyboardFrame.height + 20 : self.originalY
+        }
     }
+
 
     @objc private func openTutorial() {
         if let url = URL(string: "https://www.youtube.com/shorts/iui51E31sX8") {
@@ -345,26 +360,37 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         guard magAB > 0 && magCB > 0 else { return 0 }
         return acos(dot / (magAB * magCB)) * 180 / .pi
     }
-
+    // MARK: - AI Feedback
     func generateAIFormFeedback() {
         guard !curlAngles.isEmpty else { return }
         let angles = curlAngles.map { Int($0) }
         let prompt = "Analyze a bicep curl session. Reps: \(repCount), angles: \(angles). Give 1 helpful tip."
-        Task.detached(priority: .background) {
-            do {
-                let feedback = try await OpenAIService.shared.getFeedback(prompt: prompt)
-                let line = feedback.components(separatedBy: ".").first ?? feedback
-                DispatchQueue.main.async {
-                    self.feedbackLabel.text = line + "."
+
+        DispatchQueue.global(qos: .background).async {
+            let semaphore = DispatchSemaphore(value: 0)
+            var result: String = "(No reply)"
+
+            Task {
+                do {
+                    let feedback = try await OpenAIService.shared.getFeedback(prompt: prompt)
+                    result = feedback.components(separatedBy: ".").first ?? feedback
+                } catch {
+                    result = "⚠️ \(error.localizedDescription)"
                 }
+                semaphore.signal()
+            }
+
+            semaphore.wait()
+
+            DispatchQueue.main.async {
+                self.feedbackLabel.text = result + "."
+                self.addMessage(result + ".", isUser: false) // ✅ log AI tip to chat
                 self.curlAngles.removeAll()
-            } catch {
-                print("OpenAI feedback error: \(error)")
             }
         }
     }
 
-    // MARK: - VideoCaptureDelegate
+
     
 
 // MARK: - VideoCaptureDelegate
@@ -409,26 +435,46 @@ func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffe
         DispatchQueue.main.async {
             self.poseImageView.show(poses: [pose], on: frame)
 
-            let shoulder = pose[.leftShoulder]
-            let elbow = pose[.leftElbow]
-            let wrist = pose[.leftWrist]
+            let leftShoulder = pose[.leftShoulder]
+            let leftElbow = pose[.leftElbow]
+            let leftWrist = pose[.leftWrist]
 
-            guard shoulder.isValid, elbow.isValid, wrist.isValid else { return }
+            let rightShoulder = pose[.rightShoulder]
+            let rightElbow = pose[.rightElbow]
+            let rightWrist = pose[.rightWrist]
 
-            let angle = self.angleBetween(jointA: shoulder.position,
-                                          jointB: elbow.position,
-                                          jointC: wrist.position)
-            self.curlAngles.append(angle)
+            if leftShoulder.isValid, leftElbow.isValid, leftWrist.isValid {
+                let leftAngle = self.angleBetween(jointA: leftShoulder.position,
+                                                jointB: leftElbow.position,
+                                                jointC: leftWrist.position)
+                self.curlAngles.append(leftAngle)
 
-            if angle < 90, !self.isCurling {
-                self.isCurling = true
-            } else if self.isCurling && angle > 160 {
-                self.repCount += 1
-                self.repLabel.text = "Reps: \(self.repCount)\nDoing: Curls"
-                self.isCurling = false
+                if leftAngle < 90, !self.isCurlingLeft {
+                    self.isCurlingLeft = true
+                } else if self.isCurlingLeft && leftAngle > 160 {
+                    self.repCount += 1
+                    self.repLabel.text = "Reps: \(self.repCount)\nDoing: Curls"
+                    self.isCurlingLeft = false
+                }
+            }
+
+            if rightShoulder.isValid, rightElbow.isValid, rightWrist.isValid {
+                let rightAngle = self.angleBetween(jointA: rightShoulder.position,
+                                                jointB: rightElbow.position,
+                                                jointC: rightWrist.position)
+                self.curlAngles.append(rightAngle)
+
+                if rightAngle < 90, !self.isCurlingRight {
+                    self.isCurlingRight = true
+                } else if self.isCurlingRight && rightAngle > 160 {
+                    self.repCount += 1
+                    self.repLabel.text = "Reps: \(self.repCount)\nDoing: Curls"
+                    self.isCurlingRight = false
+                }
             }
         }
     }
+
 }
 
 
