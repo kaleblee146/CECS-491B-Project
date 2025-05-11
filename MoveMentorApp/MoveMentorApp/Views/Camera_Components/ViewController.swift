@@ -10,8 +10,10 @@ import UIKit
 import AVFoundation
 import SwiftUI
 
+// MARK: -Class Declaration and Vars
 class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, VideoCaptureDelegate {
     
+    var blurEffectView: UIVisualEffectView!
     var originalY: CGFloat = 0
     var lastInferenceTime: CFTimeInterval = 0
     private let predictionQueue = DispatchQueue(label: "posePredictionQueue")
@@ -97,6 +99,21 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     }
 
     private func setupUI() {
+        // 🔹 Blur Effect View (for pause/chat background)
+        let blurEffect = UIBlurEffect(style: .regular)
+        blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        blurEffectView.isHidden = true
+        view.addSubview(blurEffectView)
+
+        NSLayoutConstraint.activate([
+            blurEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+
+        // 🔹 Rep Label
         repLabel = UILabel()
         repLabel.text = "Reps: 0\nDoing: Curls"
         repLabel.numberOfLines = 2
@@ -109,6 +126,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         repLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(repLabel)
 
+        // 🔹 Feedback Label
         feedbackLabel = UILabel()
         feedbackLabel.text = "AI feedback will appear here."
         feedbackLabel.numberOfLines = 2
@@ -133,6 +151,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
             feedbackLabel.heightAnchor.constraint(equalToConstant: 40)
         ])
 
+        // 🔹 Tutorial Button
         tutorialButton = UIButton(type: .system)
         tutorialButton.setTitle("Tutorial", for: .normal)
         tutorialButton.setTitleColor(.white, for: .normal)
@@ -149,6 +168,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
             tutorialButton.heightAnchor.constraint(equalToConstant: 44)
         ])
 
+        // 🔹 Pause Button
         pauseButton = UIButton(type: .system)
         pauseButton.setTitle("Pause", for: .normal)
         pauseButton.setTitleColor(.white, for: .normal)
@@ -165,6 +185,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
             pauseButton.heightAnchor.constraint(equalToConstant: 40)
         ])
 
+        // 🔹 Chat Button
         chatButton = UIButton(type: .system)
         chatButton.setTitle("Chat", for: .normal)
         chatButton.setTitleColor(.white, for: .normal)
@@ -181,6 +202,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
             chatButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
+
 
     private func setupChatUI() {
         chatView = UIView()
@@ -314,11 +336,15 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
     @objc private func showChat() {
         chatView.isHidden = false
         messageField.becomeFirstResponder()
+        isPaused = true
+        blurEffectView.isHidden = false
     }
 
     @objc private func hideChat() {
         chatView.isHidden = true
         messageField.resignFirstResponder()
+        isPaused = false
+        blurEffectView.isHidden = true
     }
 
     @objc private func keyboardWillChange(notification: Notification) {
