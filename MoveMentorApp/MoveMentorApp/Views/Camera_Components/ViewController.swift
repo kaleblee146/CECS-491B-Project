@@ -184,7 +184,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
 
     private func setupChatUI() {
         chatView = UIView()
-        chatView.backgroundColor = .white
+        chatView.backgroundColor = UIColor(white: 0.1, alpha: 0.8) // dark gray with 80% opacity
         chatView.translatesAutoresizingMaskIntoConstraints = false
         chatView.isHidden = true
         view.addSubview(chatView)
