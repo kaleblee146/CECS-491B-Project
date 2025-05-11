@@ -275,7 +275,7 @@ class ViewController: UIViewController, UITextFieldDelegate, PoseNetDelegate, Vi
         bubble.text = text
         bubble.numberOfLines = 0
         bubble.font = .systemFont(ofSize: 16)
-        bubble.textColor = isUser ? .white : .black
+        bubble.textColor = isUser  .white
         bubble.backgroundColor = isUser 
             ? UIColor(red: 228/255, green: 68/255, blue: 124/255, alpha: 1.0)  // User: pinkish red
             : UIColor(red: 102/255, green: 94/255, blue: 255/255, alpha: 1.0)  // AI: indigo-blue
