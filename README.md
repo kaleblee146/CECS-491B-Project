@@ -11,7 +11,7 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
   - [Local Development](#local-development)
   - [Containerization \& AWS Deployment](#containerization--aws-deployment)
   - [Component Overviews](#component-overviews)
-    - [AWS RDS](#aws-rds)
+    - [Diagrams](#diagrams)
     - [Camera](#camera)
     - [DjangoBackend](#djangobackend)
     - [MoveMentorApp](#movementorapp)
@@ -19,46 +19,29 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
 
 ## Directory Structure
 
-```bash
-.
-├── AWS RDS
-│   ├── MoveMentor.pem
-│   └── movementordb.pem
-├── Camera
-│   ├── Configuration
-│   │   └── SampleCode.xcconfig
-│   ├── PoseFinder
-│   │   ├── App
-│   │   ├── Extensions+Types
-│   │   ├── Model
-│   │   ├── Pose
-│   │   ├── UI
-│   │   └── Utils
-│   └── PoseFinder.xcodeproj
-├── DjangoBackend
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   ├── manage.py
-│   ├── analytics
-│   ├── core
-│   ├── notifications
-│   ├── plans
-│   ├── resources
-│   ├── users
-│   └── workouts
-├── MoveMentorApp
-│   ├── MoveMentorApp
-│   ├── MoveMentorApp.xcodeproj
-│   ├── MoveMentorAppTests
-│   └── MoveMentorAppUITests
-├── docker-compose.yml
-├── Dockerrun.aws.json
-├── README.md
-└── env
-    └── … (virtualenv files)
 ```
-
-> **Note:** The old `moveMentorPhoneTest` directory has been removed. **MoveMentorApp** is now the sole iOS front-end.
+.
+├── Diagrams/                      # System architecture and database schema diagrams
+├── DjangoBackend/                 # Django server application
+│   ├── analytics/                 # Movement data processing and analysis
+│   ├── backend/                   # Main Django project configuration
+│   │   └── dash_app/              # Data visualization dashboards
+│   ├── core/                      # Shared utilities and base models
+│   ├── notifications/             # User alerts and feedback system
+│   ├── plans/                     # Workout programming and scheduling
+│   ├── resources/                 # Educational content management
+│   ├── users/                     # User authentication and profiles
+│   ├── workouts/                  # Exercise tracking and logging
+│   ├── Dockerfile                 # Container configuration
+│   ├── docker-compose.yml         # Docker services configuration
+│   ├── requirements.txt           # Python dependencies
+│   └── manage.py                  # Django management script
+└── MoveMentorApp/                 # iOS frontend application
+    ├── MoveMentorApp/             # Main application code
+    │   ├── Managers/              # Network and data management
+    │   └── Views/                 # SwiftUI views and screens
+    └── MoveMentorAppTests/        # Application test suite
+```
 
 ## Prerequisites
 
@@ -93,9 +76,25 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
      --region us-west-1
    ```
 
-2. **Create your environment** (only once)  
+2. **Create your environment with VPC configuration**  
    ```bash
-   eb create movementor-prod
+   # Set your VPC and security group IDs
+   export VPC=your-vpc-id
+   export INSTANCE_SG=your-security-group-id
+
+   # Create the environment
+   eb create green-env-fresh \
+     --platform "Docker running on 64bit Amazon Linux 2" \
+     --elb-type application \
+     --region us-west-1 \
+     --vpc.id $VPC \
+     --vpc.publicip \
+     --vpc.elbpublic \
+     --vpc.elbsubnets subnet-public-1,subnet-public-2 \
+     --vpc.ec2subnets subnet-private-1,subnet-private-2 \
+     --vpc.securitygroups $INSTANCE_SG \
+     --instance_type t3.micro \
+     --timeout 30
    ```
 
 3. **Deploy**  
@@ -113,9 +112,10 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
 
 ## Component Overviews
 
-### AWS RDS  
-- Manages our PostgreSQL database.  
-- **Security:** Credentials injected via environment variables; rotate keys regularly.
+### Diagrams
+- Database schema and entity relationship diagrams
+- System architecture diagrams showing component interactions
+- Visual documentation of project structure
 
 ### Camera  
 - Swift-based module for capturing video and streaming to the backend for pose analysis.
