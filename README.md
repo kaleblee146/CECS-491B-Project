@@ -12,8 +12,9 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
   - [Containerization \& AWS Deployment](#containerization--aws-deployment)
   - [Component Overviews](#component-overviews)
     - [Diagrams](#diagrams)
-    - [Camera](#camera)
     - [DjangoBackend](#djangobackend)
+    - [Web Server Stack](#web-server-stack)
+    - [Camera](#camera)
     - [MoveMentorApp](#movementorapp)
   - [License](#license)
 
@@ -32,8 +33,11 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
 │   ├── resources/                 # Educational content management
 │   ├── users/                     # User authentication and profiles
 │   ├── workouts/                  # Exercise tracking and logging
+│   ├── .platform/                 # AWS/Nginx configuration files
+│   │   └── nginx/                 # Nginx server configuration
 │   ├── Dockerfile                 # Container configuration
 │   ├── docker-compose.yml         # Docker services configuration
+│   ├── Procfile                   # Process definitions for Gunicorn
 │   ├── requirements.txt           # Python dependencies
 │   └── manage.py                  # Django management script
 └── MoveMentorApp/                 # iOS frontend application
@@ -51,6 +55,7 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
 - **pip**  
 - **Docker & Docker Compose**  
 - **AWS CLI** & **EB CLI**  
+- **Nginx** & **Gunicorn** (handled by Docker in deployment)
 
 ## Local Development
 
@@ -117,16 +122,28 @@ MoveMentor is an AI-powered form-tracking app that provides real-time feedback o
 - System architecture diagrams showing component interactions
 - Visual documentation of project structure
 
+### DjangoBackend  
+- **Frameworks:** Django + Django REST Framework  
+- **Responsibilities:**  
+  - User authentication and authorization  
+  - Movement analytics data processing
+  - REST API endpoints for front-end & camera  
+  - Admin interface for content management
+
+### Web Server Stack
+- **Nginx:**
+  - Acts as a reverse proxy for the application
+  - Handles SSL termination
+  - Serves static and media files
+  - Configuration in `.platform/nginx/conf.d/`
+
+- **Gunicorn:**
+  - WSGI HTTP server for running the Django application
+  - Managed through Procfile for production deployment
+  - Configured for reliability and performance with multiple workers
+
 ### Camera  
 - Swift-based module for capturing video and streaming to the backend for pose analysis.
-
-### DjangoBackend  
-- **Frameworks:** Django + DRF  
-- **Responsibilities:**  
-  - User auth  
-  - Movement analytics CRUD  
-  - REST endpoints for front-end & camera  
-  - Admin interface  
 
 ### MoveMentorApp  
 - Swift iOS app:  
